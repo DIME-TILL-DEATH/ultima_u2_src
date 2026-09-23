@@ -31,7 +31,7 @@ doc/
 
 # Libraries
 *.lib
-#*.a
+*.a
 *.la
 *.lo
 
@@ -69,3 +69,7 @@ dkms.conf
 .project
 
 #src/application/.memutz
+
+ultima_u2/src/application/.memutz
+
+amt_ultima_f7_bootloader/src/application/.memutz

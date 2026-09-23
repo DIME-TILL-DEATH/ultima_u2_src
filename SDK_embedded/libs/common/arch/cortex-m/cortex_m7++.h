@@ -1102,6 +1102,9 @@ struct scb_t
 
   inline void data_cache_activated()
     {
+	  if (l1_data_cache() == configuration_control_t::l1_data_cache_t::enable)
+	      return;
+
       cache_size_selection.modify( cache_size_selection_t::select_t::data, cache_size_selection_t::level_t::level_1 );
 
       dsb();
@@ -1350,6 +1353,8 @@ struct itm_t
   struct lock_status_t : public read_write_32_t
   {
   };
+
+
 
 
     union

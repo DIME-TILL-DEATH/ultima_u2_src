@@ -1030,7 +1030,7 @@ inline __attribute__((always_inline)) void system_init(const uint32_t vec_tab_of
       }
     if( system_init_profile.l1_data_cache_active)
       {
-        scb.data_cache_activated();
+		scb.data_cache_activated();
         scb.data_cache_clean_invalidate();
       }
 }

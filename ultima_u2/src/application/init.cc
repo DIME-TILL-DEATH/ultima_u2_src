@@ -94,7 +94,7 @@ const uint8_t exp_init[4] = {100,0,5,10};
 void init(void)
 {
 
- /* arm_fir_init_f32(&cab_inst, num_tab_cab, coef_cab, state_cab, block_samples);
+  arm_fir_init_f32(&cab_inst, num_tab_cab, coef_cab, state_cab, block_samples);
   arm_fir_init_f32(&amp_inst, num_tab_amp, coef_amp, state_amp, block_samples);
   arm_biquad_cascade_df1_init_f32(&eq_instance, eq_stage , coeff_eq , stage_eq);
   arm_biquad_cascade_df1_init_f32(&presen_instance, presen_stage , coeff_presen , stage_presen);
@@ -156,16 +156,16 @@ void init(void)
   gpioe.pin1_pull_no();
   gpioe.pin1_output_speed_very_high();
 
-  //gpiod.pin4_mode_output();
-  //gpiod.pin4_output_type_pull_push();
-  //gpiod.pin4_pull_no();
-  //gpiod.pin4_output_speed_very_high();
+//  gpiod.pin4_mode_output();
+//  gpiod.pin4_output_type_pull_push();
+//  gpiod.pin4_pull_no();
+//  gpiod.pin4_output_speed_very_high();
 
   gpiob.clock_enable();
-  //gpiob.pin7_mode_output();
-  //gpiob.pin7_output_type_pull_push();
-  //gpiob.pin7_pull_no();
-  //gpiob.pin7_output_speed_high();
+//  gpiob.pin7_mode_output();
+//  gpiob.pin7_output_type_pull_push();
+//  gpiob.pin7_pull_no();
+//  gpiob.pin7_output_speed_high();
 //-------------------------------------------------conf pins codec SPI6--------------------------
   gpiob.pin3_mode_alternate_function();
   gpiob.pin3_output_type_pull_push();
@@ -259,7 +259,7 @@ void init(void)
   gpiod.pin13_pull_no();
   gpiod.pin13_output_speed_high();            // TAP LED
 //-------------------------------------------------------------------SAI1 init----------------------------------
-/*
+
   rcc.pll_sai_on();
   rcc.pll_sai_q();
   rcc.pll_sai_q_div1();
@@ -515,7 +515,7 @@ void init(void)
 //------------------------------------------------------------init display-------------------------------------------
   void disp_init(void);
   disp_init();
-  */
+
 }
 void start_irq(void)
 {
