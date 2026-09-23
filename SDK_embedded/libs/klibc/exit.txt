@@ -1,0 +1,2 @@
+not need for implementation
+implement in libs/st/stm32/klen/crt/crt_common.h

@@ -1,0 +1,10 @@
+LIBNAME = libst_dsp
+
+LIB_SRC_DIR=$(STM32_ST_DSP_SRC_DIR)
+
+include $(SRC_DIR)/rules.mk
+
+CFLAGS += -I./ -I$(SRC_DIR)/include
+
+
+

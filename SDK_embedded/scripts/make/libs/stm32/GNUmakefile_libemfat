@@ -1,0 +1,8 @@
+LIBNAME = libemfat
+
+LIB_SRC_DIR=$(EMFAT_SRC_DIR)
+
+include $(SRC_DIR)/rules.mk
+
+CFLAGS +=	-I./ \
+			-I$(SRC_DIR)/include

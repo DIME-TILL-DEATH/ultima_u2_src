@@ -1,0 +1,1 @@
+convert -crop 710x1000+590+185  *.png  -page A4  -normalize out.pdf

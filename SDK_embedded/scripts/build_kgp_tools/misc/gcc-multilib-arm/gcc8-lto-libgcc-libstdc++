@@ -1,0 +1,37 @@
+libgcc:
+1 вытереть из Makefile ключи -O2 -g
+2 прописать 
+AR = arm-kgp-eabi-gcc-ar
+RANLIB = arm-kgp-eabi-gcc-ranlib
+HOST_LIBGCC2_CFLAGS =-g0 -Ofast -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging
+
+3 собоать  
+make -j12/install
+
+*сборка либы через LTO враперы arm-kgp-eabi-gcc-ar/arm-kgp-eabi-gcc-ranlib/arm-kgp-eabi-gcc-nm
+
+libstdc++:
+1. вытереть из Makefile и libtool ключи -O2 -g
+2. прописать в libtool
+NM="arm-kgp-eabi-gcc-nm"
+AR="arm-kgp-eabi-gcc-ar"
+RANLIB="arm-kgp-eabi-gcc-ranlib"
+LTCFLAGS="-g0 -Ofast -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging"
+3. прописать в Makefile
+CXXFLAGS = -g0 -Ofast -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging
+4. собрать make -j12/install
+
+*сборка либы через LTO враперы arm-kgp-eabi-gcc-ar/arm-kgp-eabi-gcc-ranlib/arm-kgp-eabi-gcc-nm
+**произвести приведенные действия не только в папках таргетов но и в коневом таргете по умолчанию - от него насследуются некоторые переменные.
+
+ДЛЯ ОПТИМИЗАЦИИ ПО ПРОЦЕССОРУ И СОПРОЦЕССОРУ добавить -mcpu= -mfpu= к флагам оптимизации
+
+
+2 ****** 
+a)
+можно при сборке libgcc и libstdc++ :
+ключи оптимизации удалены - они перенесены в мультилиб
+
+make -j12 AR="arm-kgp-eabi-gcc-ar" NM="arm-kgp-eabi-gcc-nm" RANLIB="arm-kgp-eabi-gcc-ranlib" AR_FOR_TARGET="arm-kgp-eabi-gcc-ar" NM_FOR_TARGET="arm-kgp-eabi-gcc-nm" RANLIB_FOR_TARGET="arm-kgp-eabi-gcc-ranlib" HOST_LIBGCC2_CFLAGS="-g0 -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging" LTCFLAGS="-g0 -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging" CXXFLAGS="-g0 -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging" CFLAGS="-g0 -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging" CFLAGS_FOR_TARGET="-g0 -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging" CXXFLAGS_FOR_TARGET="-g0 -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging" HOST_LIBGCC2_CFLAGS="-g0 -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -flto-odr-type-merging"
+
+этой же командой и инсталировать, 

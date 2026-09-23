@@ -1,0 +1,69 @@
+MULTILIB_OPTIONS     = marm/mthumb
+MULTILIB_DIRNAMES    = arm thumb
+MULTILIB_EXCEPTIONS  = 
+MULTILIB_MATCHES     =
+
+MULTILIB_OPTIONS      += march=armv7
+MULTILIB_DIRNAMES     += thumb2
+MULTILIB_EXCEPTIONS   += march=armv7* marm/*march=armv7*
+MULTILIB_MATCHES      += march?armv7=march?armv7-a
+MULTILIB_MATCHES      += march?armv7=march?armv7-r
+MULTILIB_MATCHES      += march?armv7=march?armv7-m
+MULTILIB_MATCHES      += march?armv7=mcpu?cortex-a8
+MULTILIB_MATCHES      += march?armv7=mcpu?cortex-r4
+#MULTILIB_MATCHES      += march?armv7=mcpu?cortex-m3
+
+MULTILIB_OPTIONS    += mcpu=cortex-m0
+MULTILIB_DIRNAMES   += cortex-m0
+MULTILIB_EXCEPTIONS += mcpu=cortex-m0*  *marm*/*mcpu=cortex-m0*  *march=armv7*/*mcpu=cortex-m0*   
+MULTILIB_MATCHES    += mcpu?cortex-m0=mtune?cortex-m0
+
+MULTILIB_OPTIONS    += mcpu=cortex-m0plus
+MULTILIB_DIRNAMES   += cortex-m0plus
+MULTILIB_EXCEPTIONS += mcpu=cortex-m0plus*  *marm*/*mcpu=cortex-m0plus*  *march=armv7*/*mcpu=cortex-m0plus* *mcpu=cortex-m0*/*mcpu=cortex-m0plus*  
+MULTILIB_MATCHES    += mcpu?cortex-m0plus=mtune?cortex-m0plus
+
+MULTILIB_OPTIONS    += mcpu=cortex-m1
+MULTILIB_DIRNAMES   += cortex-m1
+MULTILIB_EXCEPTIONS += mcpu=cortex-m1*  *marm*/*mcpu=cortex-m1*  *march=armv7*/*mcpu=cortex-m1* *mcpu=cortex-m0*/*mcpu=cortex-m1*  *mcpu=cortex-m0plus*/*mcpu=cortex-m1* 
+MULTILIB_MATCHES    += mcpu?cortex-m1=mtune?cortex-m1
+
+MULTILIB_OPTIONS    += mcpu=cortex-m1.small-multiply
+MULTILIB_DIRNAMES   += cortex-m1.small-multiply
+MULTILIB_EXCEPTIONS += mcpu=cortex-m1.small-multiply*  *marm*/*mcpu=cortex-m1.small-multiply*  *march=armv7*/*mcpu=cortex-m1.small-multiply* *mcpu=cortex-m0*/*mcpu=cortex-m1.small-multiply*  *mcpu=cortex-m0plus*/*mcpu=cortex-m1.small-multiply* *mcpu=cortex-m1*/*mcpu=cortex-m1.small-multiply*
+MULTILIB_MATCHES    += mcpu?cortex-m1=mtune?cortex-m1
+
+MULTILIB_OPTIONS    += mcpu=cortex-m3
+MULTILIB_DIRNAMES   += cortex-m3
+MULTILIB_EXCEPTIONS += mcpu=cortex-m3*  *marm*/*mcpu=cortex-m3*  *march=armv7*/*mcpu=cortex-m3*  *mcpu=cortex-m0*/*mcpu=cortex-m3* *mcpu=cortex-m0plus*/*mcpu=cortex-m3* *mcpu=cortex-m1*/*mcpu=cortex-m3* *mcpu=cortex-m1.small-multiply*/*mcpu=cortex-m3*
+MULTILIB_MATCHES    += mcpu?cortex-m3=mtune?cortex-m3
+
+MULTILIB_OPTIONS    += mcpu=cortex-m4
+MULTILIB_DIRNAMES   += cortex-m4sf
+MULTILIB_EXCEPTIONS += mcpu=cortex-m4*  *marm*/*mcpu=cortex-m4*  *march=armv7*/*mcpu=cortex-m4*  *mcpu=cortex-m0*/*mcpu=cortex-m4* *mcpu=cortex-m0plus*/*mcpu=cortex-m4* *mcpu=cortex-m1*/*mcpu=cortex-m4* *mcpu=cortex-m1.small-multiply*/*mcpu=cortex-m4* *mcpu=cortex-m3*/*mcpu=cortex-m4*
+MULTILIB_MATCHES    += mcpu?cortex-m4=mtune?cortex-m4
+
+MULTILIB_OPTIONS    += mcpu=cortex-m7
+MULTILIB_DIRNAMES   += cortex-m7
+MULTILIB_EXCEPTIONS += mcpu=cortex-m7*  *marm*/*mcpu=cortex-m7*  *march=armv7*/*mcpu=cortex-m7*  *mcpu=cortex-m0*/*mcpu=cortex-m7* *mcpu=cortex-m0plus*/*mcpu=cortex-m7* *mcpu=cortex-m1*/*mcpu=cortex-m7* *mcpu=cortex-m1.small-multiply*/*mcpu=cortex-m7* *mcpu=cortex-m3*/*mcpu=cortex-m7* *mcpu=cortex-m4*/*mcpu=cortex-m7* 
+MULTILIB_MATCHES    += mcpu?cortex-m7=mtune?cortex-m7
+
+MULTILIB_OPTIONS    += mfpu=fpv4-sp-d16
+MULTILIB_DIRNAMES   += fpv4-sp-d16
+MULTILIB_EXCEPTIONS += mfpu=fpv4-sp-d16* *marm*/*fpv4-sp-d16* *march=armv7*/*fpv4-sp-d16*  *mcpu=cortex-m0*/*fpv4-sp-d16* *mcpu=cortex-m0plus*/*fpv4-sp-d16* *mcpu=cortex-m1*/*fpv4-sp-d16* *mcpu=cortex-m1.small-multiply*/*fpv4-sp-d16* *mcpu=cortex-m3*/*fpv4-sp-d16* *mcpu=cortex-m7*/*fpv4-sp-d16*
+MULTILIB_MATCHES    +=
+
+MULTILIB_OPTIONS    += mfpu=fpv5-sp-d16
+MULTILIB_DIRNAMES   += fpv5-sp-d16
+MULTILIB_EXCEPTIONS += mfpu=fpv5-sp-d16* *marm*/*fpv5-sp-d16* *march=armv7*/*fpv5-sp-d16*  *mcpu=cortex-m0*/*fpv5-sp-d16* *mcpu=cortex-m0plus*/*fpv5-sp-d16* *mcpu=cortex-m1*/*fpv5-sp-d16* *mcpu=cortex-m1.small-multiply*/*fpv5-sp-d16* *mcpu=cortex-m3*/*fpv5-sp-d16* *mcpu=cortex-m4*/*fpv5-sp-d16* *fpv4-sp-d16*/*fpv5-sp-d16* 
+MULTILIB_MATCHES    +=
+
+MULTILIB_OPTIONS    += mfpu=fpv5-d16
+MULTILIB_DIRNAMES   += fpv5-d16
+MULTILIB_EXCEPTIONS += mfpu=fpv5-d16*    *marm*/*fpv5-d16*    *march=armv7*/*fpv5-d16*     *mcpu=cortex-m0*/*fpv5-d16* *mcpu=cortex-m0plus*/*fpv5-d16* *mcpu=cortex-m1*/*fpv5-d16* *mcpu=cortex-m1.small-multiply*/*fpv5-d16* *mcpu=cortex-m3*/*fpv5-d16*  *mcpu=cortex-m4*/*fpv5-d16*     *fpv4-sp-d16*/*fpv5-d16*     *fpv5-sp-d16*/*fpv5-d16*
+MULTILIB_MATCHES    +=
+
+MULTILIB_OPTIONS    += mfloat-abi=hard
+MULTILIB_DIRNAMES   += fpu
+MULTILIB_EXCEPTIONS += mfloat-abi=hard*  *marm*/*mfloat-abi=hard*  *march=armv7*/*mfloat-abi=hard* *mcpu=cortex-m0*/*mfloat-abi=hard* *mcpu=cortex-m0plus*/*mfloat-abi=hard* *mcpu=cortex-m1*/*mfloat-abi=hard* *mcpu=cortex-m1.small-multiply*/*mfloat-abi=hard* *mcpu=cortex-m3*/*mfloat-abi=hard*
+MULTILIB_MATCHES    +=

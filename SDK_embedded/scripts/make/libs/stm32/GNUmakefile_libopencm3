@@ -1,0 +1,175 @@
+LIBNAME = libopencm3
+
+LIB_SRC_DIR=$(LIBOPENCM3_SRC_DIR)
+
+#set a famaly relative excludes files
+EXCLUDE_XSRCS_F0=./st_usbfs_v1.c \
+                 ./st_usbfs_v2.c \
+                 common/adc_common_v2_multi.c \
+                 common/adc_common_v1.c \
+                 common/crypto_common_f24.c \
+                 common/dma_common_f24.c \
+                 common/crs_common_all.c \
+                 common/flash_common_f234.c \
+                 common/flash_common_f24.c \
+                 common/hash_common_f24.c \
+                 common/pwr_common_l01.c \
+                 common/timer_common_f234.c \
+                 common/timer_common_f24.c \
+                 common/i2c_common_all.c \
+                 common/spi_common_l1f124.c \
+                 common/usart_common_f124.c \
+                 common/usart_common_all.c \
+                 common/rng_common_v1.c \
+                 common/st_usbfs_core.c \
+                 common/i2c_common_v1.c \
+                 common/pwr_common_v2.c \
+                 usb/usb_f207.c \
+                 usb/usb_f107.c \
+                 ./can.c
+
+EXCLUDE_XSRCS_F1=./st_usbfs_v2.c \
+                 common/adc_common_v2.c \
+                 common/adc_common_v2_multi.c \
+                 common/crypto_common_f24.c \
+                 common/dma_common_f24.c \
+                 common/crs_common_all.c \
+                 common/flash_common_f234.c \
+                 common/flash_common_f24.c \
+                 common/gpio_common_f0234.c \
+                 common/hash_common_f24.c \
+                 common/pwr_common_l01.c \
+                 common/pwr_common_v2.c \
+                 common/rtc_common_l1f024.c \
+                 common/spi_common_f03.c \
+                 common/rng_common_v1.c \
+                 common/timer_common_f0234.c \
+                 common/timer_common_f24.c \
+                 common/i2c_common_v2.c \
+                 usb/usb_f207.c \
+                 common/usart_common_v2.c \
+
+EXCLUDE_XSRCS_F4=./st_usbfs_v1.c \
+                 ./st_usbfs_v2.c \
+                 common/crc_v2.c \
+                 common/adc_common_v2.c \
+                 common/adc_common_v2_multi.c \
+                 common/crs.c \
+                 common/crs_common_all.c \
+                 common/dma_common_l1f013.c \
+                 common/flash_common_f01.c \
+                 common/i2c_common_v2.c \
+                 common/pwr_common_v2.c \
+                 common/spi_common_f03.c \
+                 common/st_usbfs_core.c \
+                 common/usart_common_v2.c \
+                 common/flash_common_l01.c \
+                 common/spi_common_v2.c
+                 
+EXCLUDE_XSRCS_F7=./st_usbfs_v1.c \
+                 ./st_usbfs_v2.c \
+                 ./can.c \
+                 ./desig.c \
+                 common/i2c_common_v1.c \
+                 common/i2c_common_v2.c \
+                 common/timer_common_f0234.c \
+                 common/pwr_common_v1.c \
+                 common/pwr_common_v2.c \
+                 common/adc_common_v2.c \
+                 common/adc_common_v2_multi.c \
+                 common/crc_v2.c \
+                 common/crs.c \
+                 common/crs_common_all.c \
+                 common/dma_common_l1f013.c \
+                 common/flash_common_f01.c \
+                 common/pwr_common_l01.c \
+                 common/spi_common_f03.c \
+                 common/st_usbfs_core.c \
+                 common/usart_common_v2.c \
+                 common/spi_common_all.c \
+                 common/iwdg_common_all.c \
+                 common/timer_common_f24.c \
+                 common/usart_common_f124.c \
+                 common/rtc_common_l1f024.c \
+                 common/pwr_common_all.c \
+                 common/crc_common_all.c \
+                 common/dac_common_all.c \
+                 common/crypto_common_f24.c \
+                 common/flash_common_f234.c \
+                 common/i2c_common_all.c \
+                 common/usart_common_all.c \
+                 common/adc_common_v1.c \
+                 common/dma_common_f24.c \
+                 common/hash_common_f24.c \
+                 common/timer_common_f234.c \
+                 common/timer_common_all.c \
+                 common/exti_common_all.c \
+                 common/spi_common_l1f124.c \
+                 common/flash_common_l01.c \
+                 common/spi_common_v1.c \
+
+# TODO
+#INCLUDE_CSRCS_F7 = \
+#                 pwr.c \
+#                 rcc.c \
+#                 gpio.c \
+#                 common/gpio_common_all.c \
+#                 common/gpio_common_f0234.c \
+#                 common/rcc_common_all.c \
+#                 common/flash_common_f234.c \
+#                 common/flash_common_f24.c \
+#                 common/rng_common_v1.c \
+#                 common/usart_common_all.c \
+#                 common/usart_common_v2.c \
+
+
+#function to rules.mk
+get_excludes = $(call set,EXCLUDE_XSRCS_SET,0,$(EXCLUDE_XSRCS_F0)) \
+               $(call set,EXCLUDE_XSRCS_SET,1,$(EXCLUDE_XSRCS_F1)) \
+               $(call set,EXCLUDE_XSRCS_SET,4,$(EXCLUDE_XSRCS_F4)) \
+               $(call set,EXCLUDE_XSRCS_SET,7,$(EXCLUDE_XSRCS_F7)) \
+               $(call get,EXCLUDE_XSRCS_SET,$(1))
+
+get_s_includes = $(call set,INCLUDE_SSRCS_SET,0,$(INCLUDE_SSRCS_F0)) \
+                 $(call set,INCLUDE_SSRCS_SET,1,$(INCLUDE_SSRCS_F1)) \
+                 $(call set,INCLUDE_SSRCS_SET,4,$(INCLUDE_SSRCS_F4)) \
+                 $(call set,INCLUDE_SSRCS_SET,7,$(INCLUDE_SSRCS_F7)) \
+                 $(call get,INCLUDE_SSRCS_SET,$(1))
+                 
+get_c_includes = $(call set,INCLUDE_CSRCS_SET,0,$(INCLUDE_CSRCS_F0)) \
+                 $(call set,INCLUDE_CSRCS_SET,1,$(INCLUDE_CSRCS_F1)) \
+                 $(call set,INCLUDE_CSRCS_SET,4,$(INCLUDE_CSRCS_F4)) \
+                 $(call set,INCLUDE_CSRCS_SET,7,$(INCLUDE_CSRCS_F7)) \
+                 $(call get,INCLUDE_CSRCS_SET,$(1))
+
+                 
+get_libopencm3_defs = \
+               $(call set,LIBOPENCM3_DEFINES_SET,0,-DSTM32F0) \
+               $(call set,LIBOPENCM3_DEFINES_SET,1,-DSTM32F1) \
+               $(call set,LIBOPENCM3_DEFINES_SET,4,-DSTM32F4) \
+               $(call set,LIBOPENCM3_DEFINES_SET,7,-DSTM32F7) \
+               $(call get,LIBOPENCM3_DEFINES_SET,$(1))
+
+SUBDIR_WALKER_F0= . cm3 common f0 usb 
+SUBDIR_WALKER_F1= . cm3 common f1 usb ethernet sdcard
+SUBDIR_WALKER_F4= . cm3 common f4 usb ethernet sdcard
+SUBDIR_WALKER_F7= . cm3 common f7 usb ethernet sdcard
+
+get_subdir_walker = $(call set,SUBDIR_WALKER_SET,0,$(SUBDIR_WALKER_F0)) \
+                    $(call set,SUBDIR_WALKER_SET,1,$(SUBDIR_WALKER_F1)) \
+                    $(call set,SUBDIR_WALKER_SET,4,$(SUBDIR_WALKER_F4)) \
+                    $(call set,SUBDIR_WALKER_SET,7,$(SUBDIR_WALKER_F7)) \
+                    $(call get,SUBDIR_WALKER_SET,$(1))
+              
+include $(SRC_DIR)/rules.mk
+
+LIBOPENCM3_DEFS=$(call get_libopencm3_defs,$(STM32_CHIP_FAMILY_CODE))
+
+CFLAGS += -I./                  \
+          -I$(SRC_DIR)/include  \
+          -I$(LIB_SRC_DIR)      \
+          $(LIBOPENCM3_DEFS)    \
+          -Wno-implicit-fallthrough
+
+test:
+	@echo $(STM32_CHIP_FAMILY_CODE) $(call get_libopencm3_defs,$(STM32_CHIP_FAMILY_CODE))

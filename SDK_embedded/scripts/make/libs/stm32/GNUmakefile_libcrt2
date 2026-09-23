@@ -1,0 +1,8 @@
+LIBNAME = libcrt2
+
+LIB_SRC_DIR=$(STM32_CRT2_SRC_DIR)
+
+include $(SRC_DIR)/rules.mk
+
+CXXFLAGS +=	$(CRT_DEFS) \
+			$(HARDWARE_DEFS)

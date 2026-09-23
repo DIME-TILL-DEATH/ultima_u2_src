@@ -1,0 +1,15 @@
+LIBNAME = libfreertos_plus_tcp_portable
+
+LIB_SRC_DIR=$(FREERTOS_PLUS_TCP_POTRABLE_SRC_DIR)
+
+NO_SUBDIR_WALKER=1
+
+include $(SRC_DIR)/rules.mk
+
+CFLAGS +=	-I$(LIB_SRC_DIR)/include	\
+			-I$(SRC_DIR)/include		\
+			-I$(FREERTOS_KERNEL_SRC_DIR)/include \
+			-I$(FREERTOS_PORTABLE_SRC_DIR) \
+			-I$(FREERTOS_PLUS_TCP_SRC_DIR)	\
+			-I$(FREERTOS_PLUS_TCP_POTRABLE_SRC_DIR)	\
+			$(FREERTOS_DEFS)

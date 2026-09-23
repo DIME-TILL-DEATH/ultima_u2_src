@@ -1,0 +1,7 @@
+LIBNAME = libtre
+
+LIB_SRC_DIR=$(TRE_SRC_DIR)
+
+include $(SRC_DIR)/rules.mk
+
+CFLAGS +=	-DHAVE_CONFIG_H -I$(LIB_SRC_DIR)

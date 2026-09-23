@@ -1,0 +1,86 @@
+diff --git a/gcc/Makefile.in b/gcc/Makefile.in
+index 508c674..afed39a 100644
+--- a/gcc/Makefile.in
++++ b/gcc/Makefile.in
+@@ -2071,7 +2071,8 @@ s-mlib: $(srcdir)/genmultilib Makefile
+ 	fi
+ 	$(SHELL) $(srcdir)/../move-if-change tmp-mlib.h multilib.h
+ 	$(STAMP) s-mlib
+-#
++	/opt/home/build_kgp_tools/misc/gcc-multilib-arm/copy_multilib.sh
++#
+ # Compiling object files from source files.
+ 
+ # Note that dependencies on obstack.h are not written
+diff --git a/gcc/genconfig.c b/gcc/genconfig.c
+index 194fe95..45762da 100644
+--- a/gcc/genconfig.c
++++ b/gcc/genconfig.c
+@@ -286,7 +286,7 @@ main (int argc, const char **argv)
+   /* Allow at least 30 operands for the sake of asm constructs.  */
+   /* ??? We *really* ought to reorganize things such that there
+      is no fixed upper bound.  */
+-  max_recog_operands = 29;  /* We will add 1 later.  */
++  max_recog_operands = 59;  /* We will add 1 later.  */
+   max_dup_operands = 1;
+ 
+   /* Read the machine description.  */
+diff --git a/libgcc/Makefile.in b/libgcc/Makefile.in
+index ea390a5..d0111d7 100644
+--- a/libgcc/Makefile.in
++++ b/libgcc/Makefile.in
+@@ -242,8 +242,8 @@ endif
+ 
+ # Options to use when compiling libgcc2.a.
+ #
+-LIBGCC2_DEBUG_CFLAGS = -g
+-LIBGCC2_CFLAGS = -O2 $(LIBGCC2_INCLUDES) $(GCC_CFLAGS) $(HOST_LIBGCC2_CFLAGS) \
++LIBGCC2_DEBUG_CFLAGS =
++LIBGCC2_CFLAGS = $(LIBGCC2_INCLUDES) $(GCC_CFLAGS) $(HOST_LIBGCC2_CFLAGS) \
+ 		 $(LIBGCC2_DEBUG_CFLAGS) -DIN_LIBGCC2 \
+ 		 -fbuilding-libgcc -fno-stack-protector \
+ 		 $(INHIBIT_LIBC_CFLAGS)
+@@ -295,7 +295,7 @@ INTERNAL_CFLAGS = $(CFLAGS) $(LIBGCC2_CFLAGS) $(HOST_LIBGCC2_CFLAGS) \
+ 		  $(INCLUDES) @set_have_cc_tls@ @set_use_emutls@
+ 
+ # Options to use when compiling crtbegin/end.
+-CRTSTUFF_CFLAGS = -O2 $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -g0 \
++CRTSTUFF_CFLAGS = $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -g0 \
+   $(NO_PIE_CFLAGS) -finhibit-size-directive -fno-inline -fno-exceptions \
+   -fno-zero-initialized-in-bss -fno-toplevel-reorder -fno-tree-vectorize \
+   -fbuilding-libgcc -fno-stack-protector $(FORCE_EXPLICIT_EH_REGISTRY) \
+@@ -462,8 +462,14 @@ endif
+ 
+ # These might cause a divide overflow trap and so are compiled with
+ # unwinder info.
+-LIB2_DIVMOD_FUNCS = _divdi3 _moddi3 _divmoddi4 \
+-		    _udivdi3 _umoddi3 _udivmoddi4 _udiv_w_sdiv
++ifeq ($(target_noncanonical),arm-kgp-eabi)
++   lib2funcs+=         _divdi3 _moddi3 _divmoddi4 _udivdi3 _umoddi3 _udivmoddi4 _udiv_w_sdiv
++   LIB2_DIVMOD_FUNCS =
++   KGP_NO_EXSEPTION_FLAG=-fno-exceptions
++else
++   LIB2_DIVMOD_FUNCS = _divdi3 _moddi3 _divmoddi4 _udivdi3 _umoddi3 _udivmoddi4 _udiv_w_sdiv
++   KGP_NO_EXSEPTION_FLAG=
++endif
+ 
+ # Remove any objects from lib2funcs and LIB2_DIVMOD_FUNCS that are
+ # defined as optimized assembly code in LIB1ASMFUNCS or as C code
+@@ -530,7 +536,7 @@ endif
+ ifeq ($(LIB2_DIVMOD_EXCEPTION_FLAGS),)
+ # Provide default flags for compiling divmod functions, if they haven't been
+ # set already by a target-specific Makefile fragment.
+-LIB2_DIVMOD_EXCEPTION_FLAGS := -fexceptions -fnon-call-exceptions
++LIB2_DIVMOD_EXCEPTION_FLAGS := -fexceptions -fnon-call-exceptions $(KGP_NO_EXSEPTION_FLAG)
+ endif
+ 
+ # Build LIB2_DIVMOD_FUNCS.
+@@ -851,7 +857,7 @@ endif
+ # libgcc_eh.a, only LIB2ADDEH matters.  If we do, only LIB2ADDEHSTATIC and
+ # LIB2ADDEHSHARED matter.  (Usually all three are identical.)
+ 
+-c_flags := -fexceptions
++c_flags := -fexceptions $(KGP_NO_EXSEPTION_FLAG)
+ 
+ ifeq ($(enable_shared),yes)
+ 

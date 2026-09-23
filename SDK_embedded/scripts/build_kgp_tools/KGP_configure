@@ -1,0 +1,58 @@
+!!!!! вопрос поддержки LTO плагина в виде использования gcc-ar/gcc-nm/gcc-ranlib решился через автоматический поиск и загрузку плагина в папке $BIN/../lib/bfd-plugins/$ссылка на liblto_plugin.so$
+
+
+x86_64:
+gmp:
+../../src/gmp-6.1.2/configure --prefix=/opt/x86_64-kgp-linux-gnu --disable-shared --enable-static --with-pic --enable-cxx CFLAGS="-pipe -g0 -Ofast  -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections  -fdata-sections -flto=8"
+
+mpfr:
+../../src/mpfr-4.0.1/configure --disable-shared --with-pic --prefix=/opt/x86_64-kgp-linux-gnu --with-gmp=/opt/x86_64-kgp-linux-gnu CFLAGS="-pipe -g0 -Ofast  -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections  -fdata-sections -flto=8"
+
+mpc:
+../../src/mpc-1.1.0/configure --disable-shared --with-pic --prefix=/opt/x86_64-kgp-linux-gnu --with-gmp=/opt/x86_64-kgp-linux-gnu CFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections  -fdata-sections -flto=8"
+
+isl:
+../../src/isl-0.19/configure --prefix=/opt/x86_64-kgp-linux-gnu --disable-shared --enable-static --with-pic --with-docbook CFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections  -fdata-sections -flto=8"
+
+--with-sysroot=/opt/x86_64-kgp-linux-gnu ???????????????????????????? в данный момент не применяется для BU и GCC
+
+binutils:
+ ../../src/bu-gdb/configure  --prefix=/opt/x86_64-kgp-linux-gnu --target=x86_64-kgp-linux-gnu --build=x86_64-kgp-linux-gnu -v --with-pic --enable-nls --disable-werror --enable-lto --enable-plugins --enable-static --disable-shared --with-libexpat-prefix=/opt/x86_64-kgp-linux-gnu --enable-gold CFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8"  CXXFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" LTCFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" LDFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8 -Wl,-gc-sections"
+
+gcc:
+../../src/gcc/configure --prefix=/opt/x86_64-kgp-linux-gnu --target=x86_64-kgp-linux-gnu --build=x86_64-kgp-linux-gnu -v --with-pic --enable-languages=c,c++,lto --disable-bootstrap --enable-lto --disable-libstdcxx-debug --disable-libstdcxx-pch --enable-nls --enable-static --disable-shared --with-demangler-in-ld --enable-symvers --enable-visibility --enable-libdecbumber --enable-libquadmath --enable-decimal-float=yes --enable-version-specific-runtime-libs --disable-libsanitizer --disable-libssp --disable-libmpx --disable-multilib --with-pkgversion="Klen's GNU package (KGP) for Linux x86_64 platform. << PARTHENOCISSUS >>" --enable-gold --enable-plugins --enable-plugins --with-plugin-ld=/opt/x86_64-kgp-linux-gnu/bin/x86_64-kgp-linux-gnu-ld.bfd CFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" CXXFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" LTCFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" LDFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8  -Wl,-gc-sections"
+
+#-ffat-lto-objects 
+
+arm-kgp-eabi:
+binutils config&make
+../../src/bu-gdb/configure --with-sysroot=/opt/arm-kgp-eabi --prefix=/opt/arm-kgp-eabi --target=arm-kgp-eabi --build=x86_64-kgp-linux-gnu -v --with-pic --enable-nls --enable-multilib --disable-werror --enable-lto --enable-plugins --enable-static --disable-shared --with-libexpat-prefix=/opt/x86_64-kgp-linux-gnu --enable-gold --with-pkgversion="Klen's GNU package (KGP) for arm-kgp-eabi platform. << PARTHENOCISSUS >>"  CFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" CXXFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" LTCFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" LDFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8 -Wl,-gc-sections"
+
+
+
+gcc:
+../../src/gcc/configure --with-pic --prefix=/opt/arm-kgp-eabi --target=arm-kgp-eabi --enable-languages=c,c++,lto --disable-nls --enable-gold --disable-bootstrap --enable-lto --disable-libstdcxx-debug --disable-libstdcxx-pch --enable-nls --enable-plugins --disable-shared --with-demangler-in-ld --enable-static --enable-symvers --enable-visibility --enable-libdecbumber --enable-libquadmath --enable-decimal-float=yes --enable-version-specific-runtime-libs --enable-multilib --with-multilib-list=rmprofile --enable-interwork --disable-shared --disable-threads --disable-libssp --disable-libmudflap --disable-libgomp --disable-sjlj-exceptions --disable-__cxa_atexit --disable-io --without-io --enable-fixed-point --with-newlib --with-headers=../../src/newlib/newlib/libc/include --enable-symvers --enable-visibility --with-pkgversion="Klen'\''s GNU package (KGP) for x86_64-kgp-linux-gnu platform. << PARTHENOCISSUS >>" --enable-nls -v  --enable-gold --enable-plugins --enable-plugins --with-plugin-ld=/opt/arm-kgp-eabi/bin/arm-kgp-eabi-ld.bfd  CFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" CXXFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" LTCFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8" LDFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8 -Wl,-gc-sections" CFLAGS_FOR_TARGET="-pipe -g0 -flto -ffunction-sections -fdata-sections -fgraphite" CXXFLAGS_FOR_TARGET="-pipe -g0 -flto -ffunction-sections -fdata-sections -fgraphite" LTCFLAGS_FOR_TARGET="-pipe -g0 -flto -ffunction-sections -fdata-sections -fgraphite" LDFLAGS_FOR_TARGET="-pipe -g0 -flto -ffunction-sections -fdata-sections -fgraphite -Wl,-gc-sections"
+
+dfu-util:
+ ../../src/dfu-util/configure --prefix=/opt/arm-kgp-eabi --host=x86_64-kgp-linux-gnu LIBS="-lrt -lusb-1.0 -ludev -lpthread" CFLAGS="-pipe -g0 -Ofast -fPIC -mtune=sandybridge -march=sandybridge -ffunction-sections -fdata-sections -flto=8 -DBUILD_STRING='\"'PETUNIA'\"'  -I/opt/x86_64-kgp-linux-gnu/include/libusb-1.0" -v
+
+
+fgsl_f4_Ofast:
+make -j12 CFLAGS="-mthumb -march=armv7e-m+fp -mfloat-abi=hard -mcpu=cortex-m4 -mtune=cortex-m4 -mfpu=fpv4-sp-d16 -pipe -g0 -Ofast -flto=8 -ffunction-sections -fdata-sections -fgraphite -funroll-loops -finline-functions" LTCFLAGS="-mthumb -march=armv7e-m+fp -mfloat-abi=hard -mcpu=cortex-m4 -mtune=cortex-m4 -mfpu=fpv4-sp-d16 -pipe -g0 -Ofast -flto=8 -ffunction-sections -fdata-sections -fgraphite -funroll-loops -finline-functions"
+
+fgsl_f4_Os:
+make -j12 CFLAGS="-mthumb -march=armv7e-m+fp -mfloat-abi=hard -mcpu=cortex-m4 -mtune=cortex-m4 -mfpu=fpv4-sp-d16 -pipe -g0 -Os -flto=8 -ffunction-sections -fdata-sections -fgraphite" LTCFLAGS="-mthumb -march=armv7e-m+fp -mfloat-abi=hard -mcpu=cortex-m4 -mtune=cortex-m4 -mfpu=fpv4-sp-d16 -pipe -g0 -Os -flto=8 -ffunction-sections -fdata-sections -fgraphite"
+
+fgsl_f7_sp_Ofast
+make -j12 CFLAGS="-mthumb -march=armv7e-m+fpv5 -mfloat-abi=hard -mcpu=cortex-m7 -mtune=cortex-m7 -mfpu=fpv5-sp-d16 -pipe -g0 -Ofast -flto=8 -ffunction-sections -fdata-sections -fgraphite -funroll-loops -finline-functions" LTCFLAGS="-mthumb -march=armv7e-m+fpv5 -mfloat-abi=hard -mcpu=cortex-m7 -mtune=cortex-m7 -mfpu=fpv5-sp-d16 -pipe -g0 -Ofast -flto=8 -ffunction-sections -fdata-sections -fgraphite -funroll-loops -finline-functions"
+
+fgsl_f7_sp_Os
+make -j12 CFLAGS="-mthumb -march=armv7e-m+fpv5 -mfloat-abi=hard -mcpu=cortex-m7 -mtune=cortex-m7 -mfpu=fpv5-sp-d16 -pipe -g0 -Os -flto=8 -ffunction-sections -fdata-sections -fgraphite" LTCFLAGS="-mthumb -march=armv7e-m+fpv5 -mfloat-abi=hard -mcpu=cortex-m7 -mtune=cortex-m7 -mfpu=fpv5-sp-d16 -pipe -g0 -Os -flto=8 -ffunction-sections -fdata-sections -fgraphite"
+
+fgsl_f7_dp_Ofast
+make -j12 CFLAGS="-mthumb -march=armv7e-m+fpv5 -mfloat-abi=hard -mcpu=cortex-m7 -mtune=cortex-m7 -mfpu=fpv5-d16 -pipe -g0 -Ofast -flto=8 -ffunction-sections -fdata-sections -fgraphite -funroll-loops -finline-functions" LTCFLAGS="-mthumb -march=armv7e-m+fpv5 -mfloat-abi=hard -mcpu=cortex-m7 -mtune=cortex-m7 -mfpu=fpv5-d16 -pipe -g0 -Ofast -flto=8 -ffunction-sections -fdata-sections -fgraphite -funroll-loops -finline-functions"
+
+fgsl_f7_dp_Os
+make -j12 CFLAGS="-mthumb -march=armv7e-m+fpv5 -mfloat-abi=hard -mcpu=cortex-m7 -mtune=cortex-m7 -mfpu=fpv5-d16 -pipe -g0 -Os -flto=8 -ffunction-sections -fdata-sections -fgraphite" LTCFLAGS="-mthumb -march=armv7e-m+fpv5 -mfloat-abi=hard -mcpu=cortex-m7 -mtune=cortex-m7 -mfpu=fpv5-d16 -pipe -g0 -Os -flto=8 -ffunction-sections -fdata-sections -fgraphite"
+
+

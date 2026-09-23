@@ -1,0 +1,57 @@
+after update Cube file...
+
+
+1.CMSIS:  a)for all used stm32f4xxx.h add XXX_BB_BASE region addr. see "@brief Peripheral_memory_map" in header code
+          ... 
+          #define CCMDATARAM_BB_BASE    ((uint32_t)0x12000000) /*!< CCM(core coupled memory) data RAM(64 KB) base address in the bit-band region  */
+          ...
+
+          b)fix clock defenition in system_stm32f4xx.c
+
+              #if !defined  (HSE_VALUE) 
+                  #define HSE_VALUE    ((uint32_t)25000000) /*!< Default value of the External oscillator in Hz */
+              #endif /* HSE_VALUE */
+
+            to
+
+              #if !defined  (HSE_VALUE) 
+                  #define HSE_VALUE    ((uint32_t)F_OSC) /*!< Default value of the External oscillator in Hz */
+              #endif /* HSE_VALUE */
+
+2.HAL:    a)add include to stm32f4xx_hal.h
+          
+               ...
+               include #include "stm32f4xx_hal_def.h" 
+               ...
+       
+          b)fix a PLL_N assert in stm32f4xx_hal_rcc.h
+
+             #define IS_RCC_PLLN_VALUE(VALUE) ((192 <= (VALUE)) && ((VALUE) <= 432))
+          to
+             #define IS_RCC_PLLN_VALUE(VALUE) ((192 <= (VALUE)) && ((VALUE) <= 511))
+
+
+3.USBD:   a)update inteface usb_device/class/cdc/usbd_cdc.h
+      
+          change
+
+               typedef struct _USBD_CDC_Itf
+                  {
+                    int8_t (* Init)          ();
+                    int8_t (* DeInit)        ();
+                    int8_t (* Control)       (uint8_t, uint8_t * , uint16_t);   
+                    int8_t (* Receive)       (uint8_t *, uint32_t *);  
+                  }USBD_CDC_ItfTypeDef;
+
+          to 
+    
+               typedef struct _USBD_CDC_Itf
+                  {
+                    int8_t (* Init)          (USBD_HandleTypeDef *pdev);
+                    int8_t (* DeInit)        (USBD_HandleTypeDef *pdev);
+                    int8_t (* Control)       (USBD_HandleTypeDef *pdev, uint8_t, uint8_t * , uint16_t);   
+                    int8_t (* Receive)       (USBD_HandleTypeDef *pdev, uint8_t *, uint32_t *);  
+                  }USBD_CDC_ItfTypeDef;
+
+           b)update inteface usb_device/class/cdc/usbd_cdc.c
+             and add arg "pdev" to calls Init/DeInit/Control/Receive

@@ -1,0 +1,7 @@
+git submodule init
+git submodule update
+
+
+make PREFIX=arm-kgp-eabi CROSS_COMPILE=arm-kgp-eabi- V=1 -j12
+
+sudo /opt/arm-kgp-eabi/bin/dfu-util -d 1d50:6018,:6017 -s 0x08002000:leave -D blackmagic.bin

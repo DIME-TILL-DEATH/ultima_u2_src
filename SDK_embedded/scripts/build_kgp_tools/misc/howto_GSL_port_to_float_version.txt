@@ -1,0 +1,76 @@
+
+https://lists.gnu.org/archive/html/help-gsl/2012-02/msg00026.html
+
+Subject: [Help-gsl] fgsl: single precision float version of
+gsl
+	
+
+Date Index Thread: Prev Next Thread Index
+
+I was looking for a solution similar to the question asked here:
+http://lists.gnu.org/archive/html/help-gsl/2007-12/msg00000.html
+
+As the original poster pointed out, -Ddouble=float won't work, it stops and
+complaining "long float". After some searches I decide to just do it the
+brutal way and it worked for me. So I would like to share it here (and
+maybe get better suggestions).
+
+First, cd gsl-1.15, edit configure.ac, change
+AC_INIT([gsl],[1.15])
+to
+AC_INIT([fgsl],[1.15])
+
+Then, run:
+autoconf
+./configure
+(or, for my case, ./configure --prefix=/home/me/local)
+
+Now, type this one-liner to do search/replace
+замена sqrt на sqrtf
+замена <gsl на <fgsl
+find . -print0 | xargs -0 perl -pi -e 's/long double/LONG-DOUBLE/g;s/_double/_DOUbLE/g;s/double/float/g;s/_DOUbLE/_double/g;s/LONG-DOUBLE/long double/g;s/libgsl/libfgsl/g;s/sqrt/sqrtf/g'
+
+
+find . -print0 | xargs -0 perl -pi -e 's/sqrt/sqrtf/g'
+find . -print0 | xargs -0 perl -pi -e 's/<gsl/<fgsl/g'
+
+удалить из файла gsl_machine.h все дефайнв *_DBL_* 
+
+find . -print0 | xargs -0 perl -pi -e 's/GSL_DBL_EPSILON/GSL_FLT_EPSILON/g;s/GSL_LOG_DBL_EPSILON/GSL_LOG_FLT_EPSILON/g;s/GSL_SQRT_DBL_EPSILON/GSL_SQRT_FLT_EPSILON/g;s/GSL_ROOT3_DBL_EPSILON/GSL_ROOT3_FLT_EPSILON/g;s/GSL_ROOT4_DBL_EPSILON/GSL_ROOT4_FLT_EPSILON/g;s/GSL_ROOT5_DBL_EPSILON/GSL_ROOT5_FLT_EPSILON/g;s/GSL_ROOT6_DBL_EPSILON/GSL_ROOT6_FLT_EPSILON/g;s/GSL_DBL_MIN/GSL_FLT_MIN/g;s/GSL_DBL_MAX/GSL_FLT_MAX/g;s/GSL_SQRT_DBL_MIN/GSL_SQRT_FLT_MIN/g;s/GSL_SQRT_DBL_MAX/GSL_SQRT_FLT_MAX/g;s/GSL_LOG_DBL_MIN/GSL_LOG_FLT_MIN/g;s/GSL_LOG_DBL_MAX/GSL_LOG_FLT_MAX/g;s/GSL_ROOT3_DBL_MIN/GSL_ROOT3_FLT_MIN/g;s/GSL_ROOT3_DBL_MAX/GSL_ROOT3_FLT_MAX/g;'
+
+конфигурить под M4F :
+../../src/gsl-2.4-float-cotex-m4f/configure  --disable-shared --host=arm-kgp-eabi CFLAGS="-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb  -Ofast -fomit-frame-pointer -finline-functions -ffunction-sections -fdata-sections -fgraphite -funroll-loops -flto=8 -ffat-lto-objects" --enable-maintainer-mode
+
+при сборке ругнется, нужно переименовать:
+./gsl_version.h -> ./fgsl_version.h
+
+Now you can do:
+make
+make install
+
+===================================================================
+To use it, instead of
+#include <gsl/gsl_linalg.h>
+We do:
+#include <fgsl/gsl_linalg.h>
+
+When linking, instead of linking with libgsl.a or -lgsl, link with
+libfgsl.a or -lfgsl.
+
+It's not a clean solution but if you want float instead of double in a
+certain scope, it works quite well.
+As someone has warned, certain packages require higher precision to work,
+so be wise when using this hack. :)
+
+ps: I also changed the optimization level for gcc when I compile the lib,
+instead of using the default -g -O2, when I was in the first step editing
+configure.ac, I added a line to make it looks like:
+AC_LANG(C)
+AC_PROG_CC
+AC_PROG_CPP
+CFLAGS="-O3 -mtune=native -fgraphite-identity -floop-interchange
+-floop-strip-mine -floop-block -ftree-loop-distribution"
+
+Here "-O3 -mtune" or "-O3 -msse2" is important to vectorize the loops (most
+of us have machines that support SSE2, huge speed difference). Or, use:
+-O2 -ftree-vectorize -msse2 -ftree-vectorizer-verbose=5

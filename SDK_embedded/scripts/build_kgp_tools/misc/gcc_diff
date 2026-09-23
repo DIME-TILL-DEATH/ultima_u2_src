@@ -1,0 +1,183 @@
+diff --git a/gcc/config/arm/t-arm-elf b/gcc/config/arm/t-arm-elf
+index fce3eed..ff611cf 100644
+--- a/gcc/config/arm/t-arm-elf
++++ b/gcc/config/arm/t-arm-elf
+@@ -21,70 +21,67 @@ MULTILIB_DIRNAMES    = arm thumb
+ MULTILIB_EXCEPTIONS  = 
+ MULTILIB_MATCHES     =
+ 
+-#MULTILIB_OPTIONS     += mcpu=fa526/mcpu=fa626/mcpu=fa606te/mcpu=fa626te/mcpu=fmp626/mcpu=fa726te
+-#MULTILIB_DIRNAMES    += fa526 fa626 fa606te fa626te fmp626 fa726te
+-#MULTILIB_EXCEPTIONS  += *mthumb*/*mcpu=fa526 *mthumb*/*mcpu=fa626
+-
+-#MULTILIB_OPTIONS      += march=armv7
+-#MULTILIB_DIRNAMES     += thumb2
+-#MULTILIB_EXCEPTIONS   += march=armv7* marm/*march=armv7*
+-#MULTILIB_MATCHES      += march?armv7=march?armv7-a
+-#MULTILIB_MATCHES      += march?armv7=march?armv7-r
+-#MULTILIB_MATCHES      += march?armv7=march?armv7-m
+-#MULTILIB_MATCHES      += march?armv7=mcpu?cortex-a8
+-#MULTILIB_MATCHES      += march?armv7=mcpu?cortex-r4
++MULTILIB_OPTIONS      += march=armv7
++MULTILIB_DIRNAMES     += thumb2
++MULTILIB_EXCEPTIONS   += march=armv7* marm/*march=armv7*
++MULTILIB_MATCHES      += march?armv7=march?armv7-a
++MULTILIB_MATCHES      += march?armv7=march?armv7-r
++MULTILIB_MATCHES      += march?armv7=march?armv7-m
++MULTILIB_MATCHES      += march?armv7=mcpu?cortex-a8
++MULTILIB_MATCHES      += march?armv7=mcpu?cortex-r4
+ #MULTILIB_MATCHES      += march?armv7=mcpu?cortex-m3
+ 
+-# Not quite true.  We can support hard-vfp calling in Thumb2, but how do we
+-# express that here?  Also, we really need architecture v5e or later
+-# (mcrr etc).
+-MULTILIB_OPTIONS       += mfloat-abi=hard
+-MULTILIB_DIRNAMES      += fpu
+-MULTILIB_EXCEPTIONS    += *mthumb/*mfloat-abi=hard*
+-#MULTILIB_EXCEPTIONS    += *mcpu=fa526/*mfloat-abi=hard*
+-#MULTILIB_EXCEPTIONS    += *mcpu=fa626/*mfloat-abi=hard*
++MULTILIB_OPTIONS    += mcpu=cortex-m0
++MULTILIB_DIRNAMES   += cortex-m0
++MULTILIB_EXCEPTIONS += mcpu=cortex-m0*  *marm*/*mcpu=cortex-m0*  *march=armv7*/*mcpu=cortex-m0*   
++MULTILIB_MATCHES    += mcpu?cortex-m0=mtune?cortex-m0
++
++MULTILIB_OPTIONS    += mcpu=cortex-m0plus
++MULTILIB_DIRNAMES   += cortex-m0plus
++MULTILIB_EXCEPTIONS += mcpu=cortex-m0plus*  *marm*/*mcpu=cortex-m0plus*  *march=armv7*/*mcpu=cortex-m0plus* *mcpu=cortex-m0*/*mcpu=cortex-m0plus*  
++MULTILIB_MATCHES    += mcpu?cortex-m0plus=mtune?cortex-m0plus
++
++MULTILIB_OPTIONS    += mcpu=cortex-m1
++MULTILIB_DIRNAMES   += cortex-m1
++MULTILIB_EXCEPTIONS += mcpu=cortex-m1*  *marm*/*mcpu=cortex-m1*  *march=armv7*/*mcpu=cortex-m1* *mcpu=cortex-m0*/*mcpu=cortex-m1*  *mcpu=cortex-m0plus*/*mcpu=cortex-m1* 
++MULTILIB_MATCHES    += mcpu?cortex-m1=mtune?cortex-m1
++
++MULTILIB_OPTIONS    += mcpu=cortex-m1.small-multiply
++MULTILIB_DIRNAMES   += cortex-m1.small-multiply
++MULTILIB_EXCEPTIONS += mcpu=cortex-m1.small-multiply*  *marm*/*mcpu=cortex-m1.small-multiply*  *march=armv7*/*mcpu=cortex-m1.small-multiply* *mcpu=cortex-m0*/*mcpu=cortex-m1.small-multiply*  *mcpu=cortex-m0plus*/*mcpu=cortex-m1.small-multiply* *mcpu=cortex-m1*/*mcpu=cortex-m1.small-multiply*
++MULTILIB_MATCHES    += mcpu?cortex-m1=mtune?cortex-m1
++
++MULTILIB_OPTIONS    += mcpu=cortex-m3
++MULTILIB_DIRNAMES   += cortex-m3
++MULTILIB_EXCEPTIONS += mcpu=cortex-m3*  *marm*/*mcpu=cortex-m3*  *march=armv7*/*mcpu=cortex-m3*  *mcpu=cortex-m0*/*mcpu=cortex-m3* *mcpu=cortex-m0plus*/*mcpu=cortex-m3* *mcpu=cortex-m1*/*mcpu=cortex-m3* *mcpu=cortex-m1.small-multiply*/*mcpu=cortex-m3*
++MULTILIB_MATCHES    += mcpu?cortex-m3=mtune?cortex-m3
++
++MULTILIB_OPTIONS    += mcpu=cortex-m4
++MULTILIB_DIRNAMES   += cortex-m4sf
++MULTILIB_EXCEPTIONS += mcpu=cortex-m4*  *marm*/*mcpu=cortex-m4*  *march=armv7*/*mcpu=cortex-m4*  *mcpu=cortex-m0*/*mcpu=cortex-m4* *mcpu=cortex-m0plus*/*mcpu=cortex-m4* *mcpu=cortex-m1*/*mcpu=cortex-m4* *mcpu=cortex-m1.small-multiply*/*mcpu=cortex-m4* *mcpu=cortex-m3*/*mcpu=cortex-m4*
++MULTILIB_MATCHES    += mcpu?cortex-m4=mtune?cortex-m4
++
++MULTILIB_OPTIONS    += mcpu=cortex-m7
++MULTILIB_DIRNAMES   += cortex-m7
++MULTILIB_EXCEPTIONS += mcpu=cortex-m7*  *marm*/*mcpu=cortex-m7*  *march=armv7*/*mcpu=cortex-m7*  *mcpu=cortex-m0*/*mcpu=cortex-m7* *mcpu=cortex-m0plus*/*mcpu=cortex-m7* *mcpu=cortex-m1*/*mcpu=cortex-m7* *mcpu=cortex-m1.small-multiply*/*mcpu=cortex-m7* *mcpu=cortex-m3*/*mcpu=cortex-m7* *mcpu=cortex-m4*/*mcpu=cortex-m7* 
++MULTILIB_MATCHES    += mcpu?cortex-m7=mtune?cortex-m7
++
++MULTILIB_OPTIONS    += mfpu=fpv4-sp-d16
++MULTILIB_DIRNAMES   += fpv4-sp-d16
++MULTILIB_EXCEPTIONS += mfpu=fpv4-sp-d16* *marm*/*fpv4-sp-d16* *march=armv7*/*fpv4-sp-d16*  *mcpu=cortex-m0*/*fpv4-sp-d16* *mcpu=cortex-m0plus*/*fpv4-sp-d16* *mcpu=cortex-m1*/*fpv4-sp-d16* *mcpu=cortex-m1.small-multiply*/*fpv4-sp-d16* *mcpu=cortex-m3*/*fpv4-sp-d16* *mcpu=cortex-m7*/*fpv4-sp-d16*
++MULTILIB_MATCHES    +=
++
++MULTILIB_OPTIONS    += mfpu=fpv5-sp-d16
++MULTILIB_DIRNAMES   += fpv5-sp-d16
++MULTILIB_EXCEPTIONS += mfpu=fpv5-sp-d16* *marm*/*fpv5-sp-d16* *march=armv7*/*fpv5-sp-d16*  *mcpu=cortex-m0*/*fpv5-sp-d16* *mcpu=cortex-m0plus*/*fpv5-sp-d16* *mcpu=cortex-m1*/*fpv5-sp-d16* *mcpu=cortex-m1.small-multiply*/*fpv5-sp-d16* *mcpu=cortex-m3*/*fpv5-sp-d16* *mcpu=cortex-m4*/*fpv5-sp-d16* *fpv4-sp-d16*/*fpv5-sp-d16* 
++MULTILIB_MATCHES    +=
++
++MULTILIB_OPTIONS    += mfpu=fpv5-d16
++MULTILIB_DIRNAMES   += fpv5-d16
++MULTILIB_EXCEPTIONS += mfpu=fpv5-d16*    *marm*/*fpv5-d16*    *march=armv7*/*fpv5-d16*     *mcpu=cortex-m0*/*fpv5-d16* *mcpu=cortex-m0plus*/*fpv5-d16* *mcpu=cortex-m1*/*fpv5-d16* *mcpu=cortex-m1.small-multiply*/*fpv5-d16* *mcpu=cortex-m3*/*fpv5-d16*  *mcpu=cortex-m4*/*fpv5-d16*     *fpv4-sp-d16*/*fpv5-d16*     *fpv5-sp-d16*/*fpv5-d16*
++MULTILIB_MATCHES    +=
+ 
+-# MULTILIB_OPTIONS    += mcpu=ep9312
+-# MULTILIB_DIRNAMES   += ep9312
+-# MULTILIB_EXCEPTIONS += *mthumb/*mcpu=ep9312*
+-# 	
+-# MULTILIB_OPTIONS     += mlittle-endian/mbig-endian
+-# MULTILIB_DIRNAMES    += le be
+-# MULTILIB_MATCHES     += mbig-endian=mbe mlittle-endian=mle
+-# 
+-# MULTILIB_OPTIONS    += mfloat-abi=hard/mfloat-abi=soft
+-# MULTILIB_DIRNAMES   += fpu soft
+-# MULTILIB_EXCEPTIONS += *mthumb/*mfloat-abi=hard*
+-# 
+-# MULTILIB_OPTIONS    += mno-thumb-interwork/mthumb-interwork
+-# MULTILIB_DIRNAMES   += normal interwork
+-# 
+-# MULTILIB_OPTIONS    += fno-leading-underscore/fleading-underscore
+-# MULTILIB_DIRNAMES   += elf under
+-# 
+-# MULTILIB_OPTIONS    += mcpu=arm7
+-# MULTILIB_DIRNAMES   += nofmult
+-# MULTILIB_EXCEPTIONS += *mthumb*/*mcpu=arm7*
+-# # Note: the multilib_exceptions matches both -mthumb and
+-# # -mthumb-interwork
+-# #
+-# # We have to match all the arm cpu variants which do not have the
+-# # multiply instruction and treat them as if the user had specified
+-# # -mcpu=arm7.  Note that in the following the ? is interpreted as
+-# # an = for the purposes of matching command line options.
+-# # FIXME: There ought to be a better way to do this.
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm7d
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm7di
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm70
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm700
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm700i
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm710
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm710c
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm7100
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm7500
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm7500fe
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm6
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm60
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm600
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm610
+-# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm620
++MULTILIB_OPTIONS    += mfloat-abi=hard
++MULTILIB_DIRNAMES   += fpu
++MULTILIB_EXCEPTIONS += mfloat-abi=hard*  *marm*/*mfloat-abi=hard*  *march=armv7*/*mfloat-abi=hard* *mcpu=cortex-m0*/*mfloat-abi=hard* *mcpu=cortex-m0plus*/*mfloat-abi=hard* *mcpu=cortex-m1*/*mfloat-abi=hard* *mcpu=cortex-m1.small-multiply*/*mfloat-abi=hard* *mcpu=cortex-m3*/*mfloat-abi=hard*
++MULTILIB_MATCHES    +=
+diff --git a/libgcc/Makefile.in b/libgcc/Makefile.in
+index 570b1a7..5742ac9 100644
+--- a/libgcc/Makefile.in
++++ b/libgcc/Makefile.in
+@@ -252,7 +252,7 @@ LIB2FUNCS_EXCLUDE =
+ 
+ # These might cause a divide overflow trap and so are compiled with
+ # unwinder info.
+-LIB2_DIVMOD_FUNCS = _divdi3 _moddi3 _udivdi3 _umoddi3 _udiv_w_sdiv _udivmoddi4
++# LIB2_DIVMOD_FUNCS = _divdi3 _moddi3 _udivdi3 _umoddi3 _udiv_w_sdiv _udivmoddi4
+ 
+ # List of extra C and assembler files to add to static and shared libgcc2.
+ # Assembler files should have names ending in `.S'.
+@@ -434,7 +434,14 @@ endif
+ 
+ # These might cause a divide overflow trap and so are compiled with
+ # unwinder info.
+-LIB2_DIVMOD_FUNCS = _divdi3 _moddi3 _udivdi3 _umoddi3 _udiv_w_sdiv _udivmoddi4
++ifeq ($(target_noncanonical),arm-kgp-eabi)
++ lib2funcs+=_divdi3 _moddi3 _udivdi3 _umoddi3 _udiv_w_sdiv _udivmoddi4
++ LIB2_DIVMOD_FUNCS =
++ KGP_NO_EXSEPTION_FLAG=-fno-exceptions
++else
++ LIB2_DIVMOD_FUNCS = _divdi3 _moddi3 _udivdi3 _umoddi3 _udiv_w_sdiv _udivmoddi4
++ KGP_NO_EXSEPTION_FLAG=
++endif
+ 
+ # Remove any objects from lib2funcs and LIB2_DIVMOD_FUNCS that are
+ # defined as optimized assembly code in LIB1ASMFUNCS or as C code
+@@ -499,7 +506,7 @@ endif
+ ifeq ($(LIB2_DIVMOD_EXCEPTION_FLAGS),)
+ # Provide default flags for compiling divmod functions, if they haven't been
+ # set already by a target-specific Makefile fragment.
+-LIB2_DIVMOD_EXCEPTION_FLAGS := -fexceptions -fnon-call-exceptions
++LIB2_DIVMOD_EXCEPTION_FLAGS := -fexceptions -fnon-call-exceptions $(KGP_NO_EXSEPTION_FLAG)
+ endif
+ 
+ # Build LIB2_DIVMOD_FUNCS.
+@@ -820,7 +827,7 @@ endif
+ # libgcc_eh.a, only LIB2ADDEH matters.  If we do, only LIB2ADDEHSTATIC and
+ # LIB2ADDEHSHARED matter.  (Usually all three are identical.)
+ 
+-c_flags := -fexceptions
++c_flags := -fexceptions $(KGP_NO_EXSEPTION_FLAG)
+ 
+ ifeq ($(enable_shared),yes)
+ 

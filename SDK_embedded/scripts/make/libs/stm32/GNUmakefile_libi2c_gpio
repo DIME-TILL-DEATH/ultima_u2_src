@@ -1,0 +1,15 @@
+LIBNAME = libi2c_gpio
+
+LIB_SRC_DIR=$(I2C_GPIO_SRC_DIR)
+
+include $(SRC_DIR)/rules.mk
+
+CXXFLAGS += -I./                  \
+          -I$(SRC_DIR)/include  \
+	  -I$(STM32_PERIFERIAL_DRV_SRC_DIR)  \
+          -I$(LIB_SRC_DIR)		\
+          -I$(STM32_CMSIS_COMMON_SRC_DIR) \
+          -I$(STM32_CMSIS_SRC_DIR) \
+          $(I2C_DEFS)
+
+

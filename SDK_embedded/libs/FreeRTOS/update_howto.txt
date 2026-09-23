@@ -1,0 +1,64 @@
+task.c
+1.Add attribute
+  void __attribute__ ((used)) vTaskSwitchContext( void )
+
+  !!замечание: с текущим компилятором 
+               gcc version 9.0.0 20181003 (experimental) (Klen's GNU package (KGP) for x86_64-kgp-linux-gnu platform. << CICHORIUM >>)
+               и версией V10.1.1 собирается и работает без аттрибута  __attribute__ ((used))
+
+2. Reimplement REENT 
+  replase NewLib calls _REENT_INIT_PTR &_ reclaim_reent  for reent_init & reent_deinit
+  read and write reent pointer
+  изменить имя макроса configUSE_NEWLIB_REENTRANT на configUSE_KLIBC_REENTRANT
+  в структуре TCB размещать объект reentrant_t а не его указатель
+
+  добавить void* reentrant в 
+       typedef struct xTASK_STATUS
+          {
+             ....
+             #if ( configUSE_REENTRANT == 1 )
+               /* klibc reentrancy support */
+	       void* reentrant ;
+             #endif
+          } TaskStatus_t;
+
+
+
+  
+        /* Required if struct _reent is used. */
+        #if ( configUSE_REENTRANT == 1 )
+	     #include "reentrant.h"
+        #endif
+  из FreeRTOS.h для того чтобы клиенты не требовали пути на включение reentrant.h
+
+3. в void vTaskStartScheduler( void )
+   удалить спецификацию static, поскольку freertos_tasks_c_additions_init определяется в приложении
+   используется для принятия особых действи в момент перед запуском шедулера FreeRTOS
+   в нашем случае - переключение mmgr в режим потокобезопасных malloc и free 
+   #ifdef FREERTOS_TASKS_C_ADDITIONS_INIT
+
+	 --static void freertos_tasks_c_additions_init( void ) PRIVILEGED_FUNCTION;
+         ++       void freertos_tasks_c_additions_init( void ) PRIVILEGED_FUNCTION;
+   #endif 
+
+
+3. в task.c  удалить код
+
+#if( configINCLUDE_FREERTOS_TASK_C_ADDITIONS_H == 1 )
+
+	#include "freertos_tasks_c_additions.h"
+
+	static void freertos_tasks_c_additions_init( void )
+	{
+		#ifdef FREERTOS_TASKS_C_ADDITIONS_INIT
+			FREERTOS_TASKS_C_ADDITIONS_INIT();
+		#endif
+	}
+
+#endif
+
+3. delete FreeRTOS.h macros:
+      #define vPortSVCHandler SVC_Handler
+      #define xPortPendSVHandler PendSV_Handler
+      #define xPortSysTickHandler SysTick_Handler
+

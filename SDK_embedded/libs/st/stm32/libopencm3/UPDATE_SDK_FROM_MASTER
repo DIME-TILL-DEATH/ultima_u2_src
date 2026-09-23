@@ -1,0 +1,56 @@
+1. copy files from master repo
+2. patch usb_msc.c in msc_data_rx_cb (https://github.com/libopencm3/libopencm3/issues/409)
+
+static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
+.................
+
+		}
+				trans->current_block++;
+			}
+		}
+---->>>>
+               if (false == trans->csw_valid) {
+		           scsi_command(ms, trans, EVENT_NEED_STATUS);
+		           trans->csw_valid = true;
+		       }
+	       left = sizeof(struct usb_msc_csw) - trans->csw_sent;
+	       if (0 < left) {
+		           max_len = MIN(ms->ep_out_size, left);
+		           p = &trans->csw.buf[trans->csw_sent];
+		           len = usbd_ep_write_packet(usbd_dev, ms->ep_in, p, max_len);
+		           trans->csw_sent += len;
+		       }
+
+----<<<<
+	} else if (trans->byte_count < trans->bytes_to_write) {
+		if (0 < trans->block_count) {
+			if ((0 == trans->byte_count) && (NULL != ms
+...................
+
+3. buld master lib
+   copy master/include/libopencmsis/stm32/*  SDK_embedded/libs/st/stm32/libopencm3/libopencmsis/stm32/
+
+4. add to can.h can.c additition api an defines
+
+   uint8_t can_transmit_status(uint32_t canport, uint8_t mailbox) see diff for prev
+   and defines
+   -------->>>>>>>>>
+      /* invalid transmission mailbox index */
+      #define CAN_TSR_INVALID_MAILBOX        -1
+      /* CAN_TSR_FAILED transmission failed */
+      #define CAN_TSR_FAILED                  0
+      /* CAN transmission succeeded */
+      #define CAN_TSR_OK                      1
+      /* CAN transmission pending */
+      #define CAN_TSR_PENDING                 2
+      /* CAN cell did not provide an empty mailbox */
+      #define CAN_TSR_NO_MAIL_BOX             4
+   --------<<<<<<<<<
+
+5. set a C extern in usb/msc.h and other if nedded 
+     BEGIN_DECLS
+         .....
+         api defines
+         .....
+     END_DECLS 
+      

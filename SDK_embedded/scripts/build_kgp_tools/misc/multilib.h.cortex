@@ -1,0 +1,59 @@
+static const char *const multilib_raw[] = {
+". !marm !mthumb !march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 !mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 !mfloat-abi=hard;",
+"arm marm !mthumb !march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 !mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 !mfloat-abi=hard;",
+"thumb !marm mthumb !march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 !mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 !mfloat-abi=hard;",
+"thumb/thumb2 !marm mthumb march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 !mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 !mfloat-abi=hard;",
+
+// M0 core 
+"thumb/cortex-m0 !marm mthumb !march=armv7 mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 !mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 !mfloat-abi=hard;",
+"thumb/cortex-m0plus !marm mthumb !march=armv7 !mcpu=cortex-m0 mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 !mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 !mfloat-abi=hard;",
+
+// M1 core
+"thumb/cortex-m1 !marm mthumb !march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 !mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 !mfloat-abi=hard;",
+"thumb/cortex-m1.small-multiply !marm mthumb !march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 !mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 !mfloat-abi=hard;",
+
+// M3 core
+"thumb/cortex-m3 !marm mthumb !march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply mcpu=cortex-m3 !mcpu=cortex-m4 !mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 !mfloat-abi=hard;",
+
+// M4 core
+"thumb/cortex-m4sf !marm mthumb !march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 mcpu=cortex-m4 !mcpu=cortex-m7 mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 mfloat-abi=hard;",
+
+// M7 core
+"thumb/cortex-m7df !marm mthumb !march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 mcpu=cortex-m7 !mfpu=fpv4-sp-d16 !mfpu=fpv5-sp-d16 mfpu=fpv5-d16 mfloat-abi=hard;",
+"thumb/cortex-m7sf !marm mthumb !march=armv7 !mcpu=cortex-m0 !mcpu=cortex-m0plus !mcpu=cortex-m1 !mcpu=cortex-m1.small-multiply !mcpu=cortex-m3 !mcpu=cortex-m4 mcpu=cortex-m7 !mfpu=fpv4-sp-d16 mfpu=fpv5-sp-d16 !mfpu=fpv5-d16 mfloat-abi=hard;",
+NULL
+};
+
+static const char *const multilib_reuse_raw[] = {
+NULL
+};
+
+static const char *const multilib_matches_raw[] = {
+"march=armv7-a march=armv7;",
+"march=armv7-r march=armv7;",
+"march=armv7-m march=armv7;",
+"mcpu=cortex-a8 march=armv7;",
+"mcpu=cortex-r4 march=armv7;",
+"mtune=cortex-m3 mcpu=cortex-m3;",
+"mtune=cortex-m4 mcpu=cortex-m4;",
+"mtune=cortex-m7 mcpu=cortex-m7;",
+"marm marm;",
+"mthumb mthumb;",
+"march=armv7 march=armv7;",
+"mcpu=cortex-m3 mcpu=cortex-m3;",
+"mcpu=cortex-m4 mcpu=cortex-m4;",
+"mcpu=cortex-m7 mcpu=cortex-m7;",
+"mfpu=fpv4-sp-d16 mfpu=fpv4-sp-d16;",
+"mfpu=fpv5-sp-d16 mfpu=fpv5-sp-d16;",
+"mfpu=fpv5-d16 mfpu=fpv5-d16;",
+"mfloat-abi=hard mfloat-abi=hard;",
+NULL
+};
+
+static const char *multilib_extra = "";
+
+static const char *const multilib_exclusions_raw[] = {
+NULL
+};
+
+static const char *multilib_options = "marm/mthumb march=armv7 mcpu=cortex-m3 mcpu=cortex-m4 mcpu=cortex-m7 mfpu=fpv4-sp-d16 mfpu=fpv5-sp-d16 mfpu=fpv5-d16 mfloat-abi=hard";

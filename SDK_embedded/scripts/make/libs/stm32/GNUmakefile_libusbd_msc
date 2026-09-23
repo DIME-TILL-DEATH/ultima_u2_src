@@ -1,0 +1,10 @@
+LIBNAME = libusbd_msc
+
+LIB_SRC_DIR=$(STM32_USBD_MSC_SRC_DIR)
+
+include $(SRC_DIR)/rules.mk
+
+CFLAGS += -I./ -I$(SRC_DIR)/include \
+			-I$(STM32_USBD_CORE_SRC_DIR) \
+			-I$(STM32_USBD_MSC_SRC_DIR) \
+			$(HARDWARE_DEFS)

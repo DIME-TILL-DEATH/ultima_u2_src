@@ -1,0 +1,4 @@
+git config --global alias.in '!git remote update -p; git log ..@{u}'
+git config --global alias.out 'log @{u}..'
+
+будут комманды git in (что придет), git out (что пушнется) 

@@ -1,0 +1,1 @@
+../../src/openocd/configure --prefix=/opt/arm-kgp-eabi LDFLAGS="-L/opt/x86_64-kgp-linux-gnu/lib/ -lusb-1.0 -ludev -ldl -lrt -lpthread" --disable-werror --disable-shared --enable-static CFLAGS="-I/opt/x86_64-kgp-linux-gnu/include -I/opt/x86_64-kgp-linux-gnu/include/libusb-1.0 -DPLATFORM=arm-kgp-eabi" PKG_CONFIG_PATH=/opt/x86_64-kgp-linux-gnu/lib/pkgconfig

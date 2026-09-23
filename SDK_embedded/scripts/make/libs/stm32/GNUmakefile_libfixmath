@@ -1,0 +1,13 @@
+LIBNAME = libfixmath
+
+LIB_SRC_DIR=$(FIXMATH_SRC_DIR)
+
+include $(SRC_DIR)/rules.mk
+
+CFLAGS +=	-I./ \
+			-I$(FIXMATH_SRC_DIR) \
+			$(FIXMATH_DEFS)
+
+
+
+
