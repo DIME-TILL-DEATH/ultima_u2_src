@@ -1,0 +1,189 @@
+#include "sdk.h"
+#include "lcd-hd44780.h"
+#include "libopencm3/stm32/rcc.h"
+#include "libopencm3/stm32/gpio.h"
+
+const uint8_t lcd44780_addLUT[4] = {0x80, 0xC0, 0x94, 0xD4};
+uint8_t lcd44780_Address, lcd44780_Line;
+uint8_t tim_lin[] = {"00.00.0"};
+
+//************************************************************************//
+
+//	задержка
+//	Input : p - величина задержки
+void lcd44780_delay(uint32_t p)
+{
+	for(uint32_t i = 0 ; i < (p * 10) ; i++)
+	  {
+	    nop();
+	  }
+}
+
+//	инициализация выводов дисплея
+void lcd44780_init_pins(void)
+{
+  rcc_periph_clock_enable(RCC_GPIOA);
+  rcc_periph_clock_enable(RCC_GPIOC);
+  gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO0 | GPIO1 | GPIO2 | GPIO3);
+  gpio_set_output_options(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO0 | GPIO1 | GPIO2 | GPIO3);
+
+  gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO1 | GPIO2 | GPIO3);
+  gpio_set_output_options(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO1 | GPIO2 | GPIO3);
+  gpio_clear(GPIOC,GPIO1);
+  gpio_clear(GPIOC,GPIO2);
+  gpio_clear(GPIOC,GPIO3);
+}
+//************************************************************************//
+//	Отправка полубайта дисплею
+//	Input : data - пол байта данных
+void lcd44780_WriteNibble(uint8_t val)
+{
+	GPIOA_BSRR = 0xf << 16;
+	        lcd44780_delay(1000);
+	GPIOA_BSRR = val & 0xf;
+	        lcd44780_delay(1000);
+	GPIOC_BSRR = GPIO2;
+	        lcd44780_delay(1000);
+	GPIOC_BSRR = GPIO2 << 16;
+	        lcd44780_delay(1000);
+}
+
+//	Отправка байта дисплею
+//	Input : data - отправляемые данные
+void lcd44780_WriteByte(uint8_t data)
+{
+  lcd44780_WriteNibble(data >> 4);
+  lcd44780_WriteNibble(data & 0x0F);
+}
+
+//	Перейти на строчку
+//	Input : LineNum - номер строки
+void lcd44780_GoToLine(char LineNum)
+{
+  TCriticalSection cs ;
+  lcd44780_RS_0;
+	     lcd44780_delay(1000);
+	lcd44780_Address = lcd44780_addLUT[LineNum-1];
+	lcd44780_WriteByte(lcd44780_Address);
+	     lcd44780_delay(1000);
+	lcd44780_RS_1;
+	lcd44780_Address = 0;
+	lcd44780_Line = LineNum;
+}
+
+//	Очистка дисплея
+void lcd44780_ClearLCD(void)
+{
+  TCriticalSection cs ;
+  lcd44780_RS_0;
+	     lcd44780_delay(1000);
+	lcd44780_WriteByte(0x01);
+	     lcd44780_delay(10000);
+	lcd44780_RS_1;
+	lcd44780_GoToLine(1);
+}
+
+//	Установка курсора дисплея
+//	Input : x , y - координаты курсора
+void lcd44780_SetLCDPosition(uint8_t x, uint8_t y)
+{
+  TCriticalSection cs ;
+  lcd44780_RS_0;
+	     lcd44780_delay(1000);
+	lcd44780_Address = lcd44780_addLUT[y] + x;
+	lcd44780_WriteByte(lcd44780_Address);
+	     lcd44780_delay(1000);
+	lcd44780_RS_1;
+	lcd44780_Line = y+1;
+}
+
+//	Отправка символа
+//	Input : c - символ
+void lcd44780_ShowChar(uint8_t x , uint8_t y , uint8_t c)
+{
+  TCriticalSection cs ;
+  lcd44780_SetLCDPosition(x , y);
+	lcd44780_RS_1;
+	    lcd44780_delay(1000);
+	lcd44780_WriteByte(c);
+	lcd44780_Address++;
+	switch (lcd44780_Address)
+	{
+		case 20: lcd44780_GoToLine(2); break;
+		case 40: lcd44780_GoToLine(1); break;
+	}
+}
+void lcd44780_ShowChar1(uint8_t c)
+{
+  TCriticalSection cs ;
+  lcd44780_RS_1;
+	    lcd44780_delay(1000);
+	lcd44780_WriteByte(c);
+	lcd44780_Address++;
+	switch (lcd44780_Address)
+	{
+		case 20: lcd44780_GoToLine(2); break;
+		case 40: lcd44780_GoToLine(1); break;
+	}
+}
+//	Отправка строки
+//	Input : *s - ссылка на строку (массив символов)
+void lcd44780_ShowStr(uint8_t x , uint8_t y , uint8_t *s)
+{
+  TCriticalSection cs ;
+  uint8_t count = 0;
+        lcd44780_SetLCDPosition(x , y);
+	while ((*s != 0) && (count < 32))
+	{
+	    if(count == 16)lcd44780_SetLCDPosition(0 , 1);
+	    lcd44780_ShowChar1(*s++);
+	    count++;
+	}
+}
+void lcd44780_Clear_str(uint8_t x , uint8_t y , uint8_t cont)
+{
+  TCriticalSection cs ;
+  lcd44780_SetLCDPosition(x , y);
+  for(uint8_t i = 0 ; i < cont ; i++)lcd44780_ShowChar1(32);
+}
+
+//	Инициализация дисплея
+void lcd44780_init(void)
+{
+  TCriticalSection cs ;
+  GPIOA_BSRR = 0xf << 16;
+  lcd44780_delay(10000);
+  GPIOA_BSRR = 2;
+  lcd44780_delay(10000);
+  GPIOC_BSRR = GPIO2;
+  lcd44780_delay(10000);
+  GPIOC_BSRR = GPIO2 << 16;
+  lcd44780_delay(10000);
+  GPIOC_BSRR = GPIO2;
+  lcd44780_delay(10000);
+  GPIOC_BSRR = GPIO2 << 16;
+  lcd44780_delay(10000);
+  GPIOA_BSRR = 0xf << 16;
+  GPIOA_BSRR = 8;
+  lcd44780_delay(10000);
+  GPIOC_BSRR = GPIO2;
+  lcd44780_delay(10000);
+  GPIOC_BSRR = GPIO2 << 16;
+  lcd44780_delay(10000);
+
+  lcd44780_WriteByte(0xc);
+  lcd44780_delay(10000);
+  lcd44780_WriteByte(0x6);
+  lcd44780_delay(10000);
+  lcd44780_WriteByte(0x1);
+  lcd44780_delay(10000);
+}
+void disp_init(void)
+{
+  TCriticalSection cs ;
+  lcd44780_delay(100000);
+  lcd44780_init_pins();
+  lcd44780_delay(10000);
+  lcd44780_init();
+}
+
