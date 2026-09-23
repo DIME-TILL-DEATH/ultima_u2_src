@@ -268,8 +268,8 @@ void loader_task_t::check_firmware()
 
 void loader_task_t::code()
 {
-	jump_to_application((uint32_t*)app);
-   check_read_protect();
+	// Read-out protection. Disabled for debug
+//   check_read_protect();
 
    // проверка наличия файловой системы и ее востановление если необходимо
    check_fs();

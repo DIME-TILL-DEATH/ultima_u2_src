@@ -1302,8 +1302,8 @@ inline __attribute__((noreturn)) void reset_irq_handler()
 
 	nop_while(DELAY_FOR_GDB);
 
-        // reset PLLs, RCC , Vector Table Relocation in Internal FLASH, external RAM , other...
-        system_init((uint32_t)gnu_linker_vec_start(),system_init_profile);
+	// reset PLLs, RCC , Vector Table Relocation in Internal FLASH, external RAM , other...
+	system_init((uint32_t)gnu_linker_vec_start(),system_init_profile);
 
 	// fill memory and initialize .bss , .data  sections
 	crt_init();
