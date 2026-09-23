@@ -1,1 +1,0 @@
-.././../../SDK_embedded/scripts/make/libs/stm32/GNUmakefile_libcrt2
