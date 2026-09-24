@@ -1,5 +1,8 @@
 //gui_task->update();  приведет к обновлению в gui_task_t::code()
 #include "appdefs.h"
+
+#include "format.h"
+
 #include "init.h"
 #include "string.h"
 #include "display.h"
@@ -1536,8 +1539,13 @@ void gui_task_t::code()
   display_task->line_12x13(16,6,(char*)"IR CabSim/FX",0);
   delay(1500);
   display_task->clear();
-  display_task->line_12x13(21,3,(char*)"Ver.1.05.07",0);
+
+  emb_string fw_version_string;
+  const uint8_t amt_ver[]= FIRMWARE_VER;
+  emb_printf::sprintf(fw_version_string, "Ver.%s", amt_ver);
+  display_task->line_12x13(21, 3, fw_version_string.c_str(), 0);
   delay(500);
+
   prog_data[od_on] = eq_num;
   display_task->clear();
   start_irq();

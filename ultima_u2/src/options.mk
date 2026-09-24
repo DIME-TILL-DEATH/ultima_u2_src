@@ -2,9 +2,11 @@ PRJ_NAME=amt_ultima_f7_bootloader_app
 
 SDK_DIR=$(SRC_DIR)/../../SDK_embedded
 
+FIRMWARE_VER=2.00.00
+
 # set relocation offset for application code in flash aria
 # for support bootloader SunSet
-FLASH_TEXT_SECTION_OFFSET=0x80000
+#FLASH_TEXT_SECTION_OFFSET=0x80000
 
 CPU_EXT_FLAGS=
 EXT_DEFS=
@@ -42,7 +44,7 @@ FREERTOS_DEFS= -DTICK_RATE_HZ_DEFAULT=$(TICK_RATE_HZ_DEFAULT)  \
 # set tlsf max block size 17-128K 18-256K 19-512K 20-1M ....  
 TLSF_FL_INDEX_MAX=17
 TLSF_DEFS=-DTLSF_USE_LOCKS -D__USE_FREERTOS__ -DTLSF_FL_INDEX_MAX=$(TLSF_FL_INDEX_MAX)
-#APP_DEFS=  not additition params
+APP_DEFS=-DFIRMWARE_VER="\"$(FIRMWARE_VER)"\"
 
 #OPT_LTO=8
 COMPILE_EXT_FLAGS=-Wfatal-errors -Wno-volatile

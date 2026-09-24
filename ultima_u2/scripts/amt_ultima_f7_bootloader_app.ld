@@ -22,7 +22,7 @@ MEMORY
    
    
 
-  flash  (rx)  : ORIGIN = 0x08000000 + 0x80000, LENGTH = 1024K - 0x80000
+  flash  (rx)  : ORIGIN = 0x08000000 + 0x00000000, LENGTH = 1024K - 0x00000000
 }
 
 __sram_start__ = 0x20000000+128K ;
