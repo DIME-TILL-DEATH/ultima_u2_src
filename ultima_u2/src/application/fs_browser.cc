@@ -1,14 +1,9 @@
-/*
- * fs_browser.cc
- *
- *  Created on: 9 мар. 2019 г.
- *      Author: klen
- */
-
 #include "fs_browser.h"
-#include "display.h"
+
 #include "controls.h"
 #include "gui.h"
+
+#include "tasks/display_task.h"
 
 fs_browser_task_t* fs_browser_task ;
 

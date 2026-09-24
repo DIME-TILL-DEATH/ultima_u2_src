@@ -5,9 +5,9 @@
 
 #include "init.h"
 #include "string.h"
-#include "display.h"
 #include "gui.h"
 #include "math.h"
+
 #include "amp_imp.h"
 #include "filt.h"
 #include "FirststFilt.h"
@@ -17,6 +17,8 @@
 #include "phaser.h"
 #include "flanger.h"
 #include "fs_browser.h"
+
+#include "tasks/display_task.h"
 
 extern Gate gate_pres;
 extern Gate gate_glob;

@@ -3,8 +3,9 @@
 #include "usbd_storage_if.h"
 #include "controls.h"
 #include "fs_browser.h"
-#include "display.h"
 #include "gui.h"
+
+#include "tasks/display_task.h"
 
 msc_task_t* msc_task ;
 

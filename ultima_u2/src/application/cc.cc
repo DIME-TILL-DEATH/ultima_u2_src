@@ -1,7 +1,8 @@
-#include "appdefs.h"
 #include "cc.h"
+
 #include "init.h"
-#include "display.h"
+
+#include "tasks/display_task.h"
 
 cc_task_t* cc_task ;
 volatile uint8_t ind_flag = 0 ;

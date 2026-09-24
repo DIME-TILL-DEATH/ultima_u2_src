@@ -1,12 +1,15 @@
+
 #include "appdefs.h"
+
 #include "gui.h"
 #include "display/sh1106.h"
 #include "msc.h"
 #include "controls.h"
 #include "fs_browser.h"
-#include "display.h"
 #include "cc.h"
 #include "spectrum.h"
+
+#include "tasks/display_task.h"
 
 void init(void);
 //----------------------------------------------------------------------------

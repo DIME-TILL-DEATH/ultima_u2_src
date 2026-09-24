@@ -2,7 +2,8 @@
 #define __GUI_H__
 
 #include "appdefs.h"
-#include "display.h"
+
+#include "tasks/display_task.h"
 
 typedef union
 {

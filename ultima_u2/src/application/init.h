@@ -3,10 +3,12 @@
 
 #include "appdefs.h"
 #include "math.h"
-#include "display.h"
 #include "gui.h"
 #include <vdt/vdt.h>
+
 #include "Reverb/reverb.h"
+
+#include "tasks/display_task.h"
 
 #define FILT_PI    3.14159265358979323846f
 #define block_samples  16

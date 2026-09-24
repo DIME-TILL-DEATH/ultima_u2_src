@@ -1,8 +1,6 @@
-#include "appdefs.h"
 #include "init.h"
 #include "gui.h"
 #include "filt.h"
-#include "display.h"
 #include "arm_math.h"
 #include "vdt/vdt.h"
 #include "Reverb/reverb.h"
@@ -15,6 +13,8 @@
 #include "flanger.h"
 #include "FirststFilt.h"
 #include "fpv4-sp-d16-instr.h"
+
+#include "tasks/display_task.h"
 
 Gate gate_pres;
 Gate gate_glob;
