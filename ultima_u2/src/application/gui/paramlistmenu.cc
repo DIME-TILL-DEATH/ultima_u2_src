@@ -125,6 +125,7 @@ void ParamListMenu::encoderPressed()
 
 	if(m_paramsList[m_currentParamNum]->updatedByClick())
 	{
+
 		printPage();
 		return;
 	}

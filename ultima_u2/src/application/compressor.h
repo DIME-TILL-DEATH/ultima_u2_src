@@ -5,6 +5,8 @@
 #include "AttRelEnv.h"
 #include <vdt/vdt.h>
 
+#include "init.h"
+
 float dB2rap(float dB);
 float rap2dB(float rap);
 

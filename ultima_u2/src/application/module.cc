@@ -50,6 +50,9 @@ TModule makeNoiseGateModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel
 	addParam(module, "threshold", 0, 127);
 	addParam(module, "attack", 0, 127);
 	addParam(module, "decay", 0, 127);
+
+	module.updateParameters = nullptr;
+	module.needUpdateParameters = true;
 	return module;
 }
 

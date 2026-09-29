@@ -1,7 +1,48 @@
 #ifndef _MODULE_H_
 #define _MODULE_H_
 
-#include "preset.h"
+//#include "appdefs.h"
+#include "processing/param_descriptor.h"
+
+enum TModuleType
+{
+	UNKNOWN_MODULE = 0,
+	NG_MODULE,
+	CM_MODULE,
+	PH_MODULE,
+	FL_MODULE,
+	PR_MODULE,
+	PA_MODULE,
+	IR_MODULE,
+	EQ_MODULE,
+	FT_MODULE,
+	RV_MODULE,
+	DL_MODULE,
+	WH_MODULE,
+	TR_MODULE,
+	CH_MODULE
+};
+
+enum TModuleChannel
+{
+	UNKNOWN_CHANNEL = 0,
+	MONO_CHANNEL,
+	STEREO_CHANNEL
+};
+
+typedef void (*updateModuleParametersHandler)(void);
+
+typedef struct{
+	TModuleType type;
+	TModuleChannel channel;
+	TParamDescriptor parameter[16];
+	uint8_t parameterCount;
+	uint8_t moduleId;	// number of module in the preset, for example: 0 - first module, 1 - second module, etc.
+	uint8_t instaceId;	// number of module type instance in the preset
+
+	bool needUpdateParameters;
+	updateModuleParametersHandler updateParameters;
+}TModule;
 
 TModule makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t moduleId, uint8_t instanceId);
 

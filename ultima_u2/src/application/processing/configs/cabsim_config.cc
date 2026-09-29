@@ -1,6 +1,8 @@
+#include <string.h>
+
+#include "compressor.h"
 #include "cabsim_config.h"
 #include "module.h"
-#include <string.h>
 
 static void setParameterValue(TModule& module, uint8_t index, int16_t value)
 {
@@ -200,9 +202,17 @@ static void addNoiseGate(TPreset& preset, uint8_t moduleId, const TCabsimConfig&
 	addModule(preset, gate);
 }
 
+extern Compressor compr;
+void compressorUpdateWrapper()
+{
+	for(uint8_t i = 1;i < 6;i++)
+		compr.comp_par(i | (currentPreset.module[1].parameter[i].value << 8));
+}
+
 static void addCompressor(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
 	TModule comp = makeCompressorModule(moduleId, 0, MONO_CHANNEL);
+	comp.updateParameters = compressorUpdateWrapper;
 	applyCompressorValues(comp, config);
 	addModule(preset, comp);
 }

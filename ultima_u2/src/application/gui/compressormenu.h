@@ -9,7 +9,13 @@ class CompressorMenu : public ParamListMenu
 {
 public:
 	CompressorMenu(AbstractMenu* parent, gui_menu_type menuType, TModule* module);
+
+	void encoderPressed() override;
+	void encoderClockwise() override;
+	void encoderCounterClockwise() override;
 private:
+
+	TModule* m_module;
 };
 
 #endif /* COMPRESSORMENU_H_ */
