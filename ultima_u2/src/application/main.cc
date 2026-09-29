@@ -1,4 +1,3 @@
-
 #include "appdefs.h"
 
 #include "gui.h"
@@ -6,10 +5,11 @@
 #include "msc.h"
 #include "controls.h"
 #include "fs_browser.h"
-#include "cc.h"
 #include "spectrum.h"
 
 #include "tasks/display_task.h"
+#include "tasks/cc_task.h"
+#include "tasks/dsp_task.h"
 
 void init(void);
 //----------------------------------------------------------------------------

@@ -231,9 +231,6 @@ const uint8_t ear_list[][10] =
 const uint8_t gate_list[][10] =
 { "N.Gate", "Threshold", "Attack", "Decay" };
 
-const uint8_t compressor_list[][10] =
-{ "Compress.", "Threshold", "Ratio", "Volume", "Attack", "Decay" };
-
 const uint8_t filt_typ[][6] =
 { "Off  ", "-6dB", "-12dB", "-18dB" };
 
@@ -327,15 +324,6 @@ void drive_init(void)
 
 void compress_init(void)
 {
-//	display_task->clear();
-//	for(uint8_t i = 0;i < 6;i++)
-//	{
-//		display_task->line_5x7(0, i, (char*) compressor_list + i * 10, 0);
-//		if(i)
-//			display_task->par_indic(65, i, prog_data[compr_on + i]);
-//		else
-//			display_task->line_5x7(65, i, (char*) on_off + prog_data[compr_on] * 4, 0);
-//	}
 	condish = compresss_men;
 
 	currentMenu = new CompressorMenu(mainMenu, gui_menu_type::MENU_COMPRESSOR, &currentPreset.module[1]);
@@ -6650,15 +6638,18 @@ void gui_task_t::code()
 						if(encoder_fl == 1)
 						{
 							currentMenu->encoderCounterClockwise();
+//							compr.comp_par(par_num | prog_data[par_num + compr_on] << 8);
 						}
 						if(encoder_fl == 2)
 						{
 							currentMenu->encoderClockwise();
+							//compr.comp_par(par_num | prog_data[par_num + compr_on] << 8);
 						}
 					}
 					if(encoder_but)
 					{
 						currentMenu->encoderPressed();
+						//compr.comp_par(par_num | prog_data[par_num + compr_on] << 8);
 					}
 					if(edit_but)
 					{
@@ -6669,83 +6660,6 @@ void gui_task_t::code()
 					clean_fl();
 				}
 			}
-			/*
-			if(!tim4_fl)
-			{
-				if(!edit_fl)
-					display_task->line_5x7(0, par_num, (char*) compressor_list + par_num * 10, 2);
-			}
-			else
-			{
-				if(!edit_fl)
-					display_task->line_5x7(0, par_num, (char*) compressor_list + par_num * 10, 0);
-			}
-			if(encoder_fl1)
-			{
-				if(encoder_fl == 1)
-				{
-					if(!edit_fl)
-					{
-						if(par_num)
-						{
-							display_task->line_5x7(0, par_num, (char*) compressor_list + par_num-- * 10, 0);
-							tim4_start(1);
-						}
-					}
-					else
-					{
-						if(prog_data[compr_on + par_num])
-						{
-							prog_data[compr_on + par_num] = enc_speed_dec(prog_data[compr_on + par_num], 0);
-							display_task->par_indic(65, par_num, prog_data[compr_on + par_num]);
-							compr.comp_par(par_num | prog_data[par_num + compr_on] << 8);
-						}
-					}
-				}
-				if(encoder_fl == 2)
-				{
-					if(!edit_fl)
-					{
-						if(par_num < 5)
-						{
-							display_task->line_5x7(0, par_num, (char*) compressor_list + par_num++ * 10, 0);
-							tim4_start(1);
-						}
-					}
-					else
-					{
-						if(prog_data[compr_on + par_num] < 127)
-						{
-							prog_data[compr_on + par_num] = enc_speed_inc(prog_data[compr_on + par_num], 127);
-							display_task->par_indic(65, par_num, prog_data[compr_on + par_num]);
-							compr.comp_par(par_num | prog_data[par_num + compr_on] << 8);
-						}
-					}
-				}
-			}
-			if(encoder_but)
-			{
-				if(!par_num)
-				{
-					prog_data[compr_on] = (prog_data[compr_on] + 1) & 1;
-					display_task->line_5x7(65, par_num, (char*) on_off + prog_data[compr_on] * 4, 0);
-				}
-				else
-				{
-					if(!edit_fl)
-					{
-						edit_fl = 1;
-						display_task->line_5x7(0, par_num, (char*) compressor_list + par_num * 10, 2);
-					}
-					else
-						edit_fl = 0;
-				}
-				tim4_start(0);
-			}
-			if(edit_but)
-				edit_init(1);
-			clean_fl();
-			*/
 			break;
 //---------------------------------------------------------------Metronome-----------------------
 		case metronome_menu:

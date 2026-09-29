@@ -3,8 +3,6 @@
 #include "gui/paramlistmenu.h"
 
 #include "tasks/display_task.h"
-//#include "io_task.h"
-//#include "sharc_task.h"
 
 
 BaseParam::BaseParam(gui_param_type paramType, TParamDescriptor* paramDescriptor)
@@ -69,8 +67,6 @@ uint32_t BaseParam::value() const
 	if(!m_descriptor) return 0;
 	else
 	{
-//		uint32_t fullValue = 0;
-//		memcpy(&fullValue, m_descriptor->ptr, m_byteSize);
 		return m_descriptor->value + m_offset;
 	}
 }
@@ -101,10 +97,6 @@ void BaseParam::increaseParam()
 {
 	if(!m_descriptor) return;
 
-//	int32_t data = 0;
-//	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
-//	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
-
 	if(m_descriptor->value < m_maxValue)
 	{
 		if(m_type != GUI_PARAMETER_NUM)
@@ -117,10 +109,6 @@ void BaseParam::increaseParam()
 void BaseParam::decreaseParam()
 {
 	if(!m_descriptor) return;
-
-//	int32_t data = 0;
-//	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
-//	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
 	if(m_descriptor->value > m_minValue)
 	{
