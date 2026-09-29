@@ -8,6 +8,8 @@ enum gui_menu_type
 {
 	MENU_MAIN_SCREEN,
 
+	MENU_COMPRESSOR,
+
 	MENU_ABSTRACT = 255
 };
 
@@ -42,7 +44,7 @@ public:
 	virtual void encoderClockwise() {};
 	virtual void encoderCounterClockwise() {};
 
-	virtual void keyUp();
+	virtual void keyEditEsc();
 
 	gui_menu_type menuType();
 

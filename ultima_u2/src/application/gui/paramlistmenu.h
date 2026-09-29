@@ -50,7 +50,7 @@ protected:
 	uint8_t m_lastSelectableParam;
 
 //	System::TapDestination m_tapDst{System::TapDestination::TAP_OFF};
-	bool m_drawIcon{true};
+//	bool m_drawIcon{true};
 
 	int8_t m_currentPageNumber{-1};
 

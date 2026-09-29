@@ -4,6 +4,8 @@
 //---------------
 #include "processing/configs/cabsim_config.h"
 //----------------
+#include "gui/compressormenu.h"
+//------------------
 
 #include "format.h"
 
@@ -23,6 +25,8 @@
 #include "fs_browser.h"
 
 #include "tasks/display_task.h"
+
+AbstractMenu* mainMenu = nullptr;
 
 extern Gate gate_pres;
 extern Gate gate_glob;
@@ -226,8 +230,10 @@ const uint8_t ear_list[][10] =
 { "Early ref", "Volume", "Size" };
 const uint8_t gate_list[][10] =
 { "N.Gate", "Threshold", "Attack", "Decay" };
+
 const uint8_t compressor_list[][10] =
 { "Compress.", "Threshold", "Ratio", "Volume", "Attack", "Decay" };
+
 const uint8_t filt_typ[][6] =
 { "Off  ", "-6dB", "-12dB", "-18dB" };
 
@@ -321,16 +327,20 @@ void drive_init(void)
 
 void compress_init(void)
 {
-	display_task->clear();
-	for(uint8_t i = 0;i < 6;i++)
-	{
-		display_task->line_5x7(0, i, (char*) compressor_list + i * 10, 0);
-		if(i)
-			display_task->par_indic(65, i, prog_data[compr_on + i]);
-		else
-			display_task->line_5x7(65, i, (char*) on_off + prog_data[compr_on] * 4, 0);
-	}
+//	display_task->clear();
+//	for(uint8_t i = 0;i < 6;i++)
+//	{
+//		display_task->line_5x7(0, i, (char*) compressor_list + i * 10, 0);
+//		if(i)
+//			display_task->par_indic(65, i, prog_data[compr_on + i]);
+//		else
+//			display_task->line_5x7(65, i, (char*) on_off + prog_data[compr_on] * 4, 0);
+//	}
 	condish = compresss_men;
+
+	currentMenu = new CompressorMenu(mainMenu, gui_menu_type::MENU_COMPRESSOR, &currentPreset.module[1]);
+	currentMenu->show();
+
 	par_num = 0;
 	edit_fl = 0;
 	tim4_start(1);
@@ -2292,9 +2302,9 @@ void gui_task_t::code()
 	display_task->clear();
 
 	emb_string fw_version_string;
-	const uint8_t amt_ver[]= FIRMWARE_VER;
-	emb_printf::sprintf(fw_version_string, "Ver.%s", amt_ver);
-	display_task->line_12x13(21, 3, fw_version_string.c_str(), 0);
+//	const uint8_t amt_ver[]= FIRMWARE_VER;
+//	emb_printf::sprintf(fw_version_string, "Ver.%s", amt_ver);
+//	display_task->line_12x13(21, 3, fw_version_string.c_str(), 0);
 	delay(500);
 
 	prog_data[od_on] = eq_num;
@@ -2305,9 +2315,21 @@ void gui_task_t::code()
 	display_task->line_12x13(16, 6, (char*) "IR CabSim/FX", 0);
 	m_vol_fl = 0;
 	mas_v = powf(master_volume, 2.0f) * (1.0f / powf(127.0f, 2.0f));
+
+
+	mainMenu = new AbstractMenu();
+	currentMenu = mainMenu;
+
 	while(1)
 	{
 		update_request->take_from_task();
+
+		//--------------------------------------------------------------foot switch process----------------------------------
+		if(foot_sw_dub_short)
+		{
+			controll_run();
+		}
+
 		switch(condish)
 		{
 		case start_screen:
@@ -6617,6 +6639,37 @@ void gui_task_t::code()
 			break;
 //------------------------------------------------------Compressor--------------
 		case compresss_men:
+			if(currentMenu)
+			{
+				if(currentMenu->menuType() != gui_menu_type::MENU_ABSTRACT)
+				{
+					currentMenu->task();
+
+					if(encoder_fl1)
+					{
+						if(encoder_fl == 1)
+						{
+							currentMenu->encoderCounterClockwise();
+						}
+						if(encoder_fl == 2)
+						{
+							currentMenu->encoderClockwise();
+						}
+					}
+					if(encoder_but)
+					{
+						currentMenu->encoderPressed();
+					}
+					if(edit_but)
+					{
+						currentMenu->keyEditEsc();
+						edit_init(1);
+					}
+
+					clean_fl();
+				}
+			}
+			/*
 			if(!tim4_fl)
 			{
 				if(!edit_fl)
@@ -6692,6 +6745,7 @@ void gui_task_t::code()
 			if(edit_but)
 				edit_init(1);
 			clean_fl();
+			*/
 			break;
 //---------------------------------------------------------------Metronome-----------------------
 		case metronome_menu:
@@ -6799,11 +6853,6 @@ void gui_task_t::code()
 			clean_fl();
 			break;
 		}
-//--------------------------------------------------------------foot switch process----------------------------------
-		if(foot_sw_dub_short)
-		{
-			controll_run();
-		}
 	}
 }
 uint8_t tap_temp_global(void)
@@ -6857,5 +6906,8 @@ IRQ_HANDLER(tim4)
 		tim4_fl = 0;
 	else
 		tim4_fl = 1;
+
+	AbstractMenu::blinkRoutine();
+
 	gui_task->update();
 }

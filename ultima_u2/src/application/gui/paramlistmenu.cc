@@ -125,16 +125,15 @@ void ParamListMenu::task()
 
 void ParamListMenu::encoderPressed()
 {
-/*	if(m_paramsList[m_currentParamNum]->disabled()) return;
+	if(m_paramsList[m_currentParamNum]->disabled()) return;
 
 	m_paramsList[m_currentParamNum]->select(m_encoderKnobSelected);
 	if(m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-							Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+		display_task->line_5x7(leftPad, m_currentParamNum % paramsOnPage, m_paramsList[m_currentParamNum]->name(), Font::fnsHighlight);
 	}
 
-	restartBlinking(1);*/
+	restartBlinking(1);
 }
 
 void ParamListMenu::encoderClockwise()
@@ -217,7 +216,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 	if(m_currentParamNum > 0) newPageNumber = m_currentParamNum / paramsOnPage;
 	else newPageNumber = 0;
 
-	if((newPageNumber != m_currentPageNumber || forceDrawIcon) && m_drawIcon)
+	if(newPageNumber != m_currentPageNumber || forceDrawIcon)
 	{
 		display_task->clear();
 		if(m_pagesCount > 1)
@@ -235,7 +234,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 
 	uint8_t stringCount = m_paramsCount - m_currentPageNumber * paramsOnPage;
 
-	for(uint8_t i = 0; i < min(stringCount, (uint8_t)4); i++)
+	for(uint8_t i = 0; i < min(stringCount, paramsOnPage); i++)
 	{
 		uint8_t displayParamNum = i + m_currentPageNumber * paramsOnPage;
 

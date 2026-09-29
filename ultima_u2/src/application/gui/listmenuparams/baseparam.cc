@@ -140,7 +140,7 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 	{
 		case BaseParam::GUI_PARAMETER_LEVEL:
 //			DisplayTask->ParamInd(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
-			display_task->par_indic(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->value) + m_offset);
+			display_task->par_indic(m_xDisplayPosition, yDisplayPosition, m_descriptor->value + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_MIX:
 //			DisplayTask->ParamIndMix(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
@@ -163,7 +163,7 @@ void BaseParam::encoderSpeedIncrease()
 {
 	tim6.disable();
 
-	int32_t data = 0;
+	int16_t data = m_descriptor->value;
 //	if(m_byteSize > 1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
 //	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
@@ -212,7 +212,7 @@ void BaseParam::encoderSpeedDecrease()
 
 	tim6.disable();
 
-	int32_t data = 0;
+	int32_t data = m_descriptor->value;
 //	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
 //	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 

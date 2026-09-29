@@ -57,12 +57,12 @@ TModule makeCompressorModule(uint8_t moduleId, uint8_t instanceId, TModuleChanne
 {
 	TModule module = makeEmptyModule(CM_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
-	addParam(module, "on", 0, 1);
-	addParam(module, "threshold", 0, 127);
-	addParam(module, "ratio", 0, 127);
-	addParam(module, "volume", 0, 127);
-	addParam(module, "attack", 0, 127);
-	addParam(module, "knee", 0, 127);
+	addParam(module, "Compress.", 0, 1);
+	addParam(module, "Threshold", 0, 127);
+	addParam(module, "Ratio", 0, 127);
+	addParam(module, "Volume", 0, 127);
+	addParam(module, "Attack", 0, 127);
+	addParam(module, "Decay", 0, 127);
 	return module;
 }
 

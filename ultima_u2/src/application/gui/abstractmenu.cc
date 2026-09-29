@@ -9,7 +9,7 @@ gui_menu_type AbstractMenu::menuType()
 	return m_menuType;
 }
 
-void AbstractMenu::keyUp()
+void AbstractMenu::keyEditEsc()
 {
 	returnToParent();
 }
