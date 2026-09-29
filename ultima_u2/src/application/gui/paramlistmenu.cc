@@ -112,20 +112,22 @@ void ParamListMenu::task()
 {
 	if(m_paramsCount == 1) m_encoderKnobSelected = true;
 
-
-
 	if(!m_encoderKnobSelected)
 	{
 		display_task->line_5x7(leftPad, m_currentParamNum % paramsOnPage, m_paramsList[m_currentParamNum]->name(), FONT_BLINKING);
 
-//		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-//								FONT_BLINKING, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 }
 
 void ParamListMenu::encoderPressed()
 {
 	if(m_paramsList[m_currentParamNum]->disabled()) return;
+
+	if(m_paramsList[m_currentParamNum]->updatedByClick())
+	{
+		printPage();
+		return;
+	}
 
 	m_paramsList[m_currentParamNum]->select(m_encoderKnobSelected);
 	if(m_encoderKnobSelected)

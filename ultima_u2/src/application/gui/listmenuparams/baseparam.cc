@@ -80,6 +80,23 @@ void BaseParam::setInverse(bool isInverse)
 	m_inverse = isInverse;
 }
 
+
+bool BaseParam::updatedByClick()
+{
+	if(m_isUpdatingByClick)
+	{
+		m_descriptor->value += m_stepSize;
+		if(m_descriptor->value > m_maxValue)
+			m_descriptor->value = m_minValue;
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void BaseParam::increaseParam()
 {
 	if(!m_descriptor) return;

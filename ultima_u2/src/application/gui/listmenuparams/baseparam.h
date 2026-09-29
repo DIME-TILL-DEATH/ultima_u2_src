@@ -50,6 +50,8 @@ public:
 	virtual void increaseParam();
 	virtual void decreaseParam();
 
+	virtual bool updatedByClick();
+
 	virtual void printParam(uint8_t yPos);
 
 	virtual void setData();
@@ -58,6 +60,8 @@ public:
 
 	bool disabled() {return m_disabled;};
 	void setDisabled(bool disabled) {m_disabled = disabled;};
+
+	void setUpdatedByClick(bool isUpdatedByClick) {m_isUpdatingByClick = isUpdatedByClick;};
 
 	void setBounds(int32_t minBound, int32_t maxBound);
 	int32_t minValue() const {return m_minValue;};
@@ -99,6 +103,8 @@ protected:
 
 	int32_t m_minValue{0};
 	int32_t m_maxValue{127};
+
+	bool m_isUpdatingByClick{false};
 
 	void encoderSpeedIncrease();
 	void encoderSpeedDecrease();
