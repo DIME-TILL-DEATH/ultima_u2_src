@@ -17,7 +17,8 @@ __attribute__((section(".dtcm_data"))) da_data_t dac_data[block_samples * 2];
 __attribute__((section(".itcm_data"))) float phas[14];
 __attribute__((section(".itcm_data"))) float memflan[2048];
 
-const int8_t def_expander[] = { -90, 1, 1, 10 };
+const int8_t def_expander[] =
+{ -90, 1, 1, 10 };
 
 float pow_temp = 1.0f / (127.0f * 127.0f);
 float a_a = -0.5f;
