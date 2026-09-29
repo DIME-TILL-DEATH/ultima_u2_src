@@ -32,7 +32,7 @@ enum TModuleChannel
 typedef struct{
 	TModuleType type;
 	TModuleChannel channel;
-	TParamDescriptor parameter[16];
+	TParamDescriptor parameter[32];
 	uint8_t parameterCount;
 	uint8_t moduleId;	// number of module in the preset, for example: 0 - first module, 1 - second module, etc.
 	uint8_t instaceId;	// number of module type instance in the preset

@@ -43,25 +43,25 @@ void CustomParam::setStrings(std::initializer_list<const char*> stringList, uint
 
 void CustomParam::increaseParam()
 {
-	if(increaseCallback && m_descriptor) increaseCallback(m_descriptor->ptr);
+	if(increaseCallback && m_descriptor) increaseCallback(&m_descriptor->value);
 	else BaseParam::increaseParam();
 }
 
 void CustomParam::decreaseParam()
 {
-	if(decreaseCallback && m_descriptor) decreaseCallback(m_descriptor->ptr);
+	if(decreaseCallback && m_descriptor) decreaseCallback(&m_descriptor->value);
 	else BaseParam::decreaseParam();
 }
 
 const char* CustomParam::name()
 {
-	if(nameCallback && m_descriptor) return nameCallback(m_descriptor->ptr);
+	if(nameCallback && m_descriptor) return nameCallback(&m_descriptor->value);
 	else return BaseParam::name();
 }
 
 uint32_t CustomParam::value() const
 {
-	if(valueCallback && m_descriptor) return valueCallback(m_descriptor->ptr);
+	if(valueCallback && m_descriptor) return valueCallback(&m_descriptor->value);
 	else return 0;
 }
 
@@ -110,8 +110,8 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 //	}
 }
 
-void CustomParam::setData()
-{
-	if(setToDspCallback && m_descriptor) setToDspCallback(m_descriptor->ptr);
-	else BaseParam::setData();
-}
+//void CustomParam::setData()
+//{
+//	if(setToDspCallback && m_descriptor) setToDspCallback(m_descriptor->value);
+//	else BaseParam::setData();
+//}

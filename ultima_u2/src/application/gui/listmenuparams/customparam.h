@@ -26,19 +26,19 @@ public:
 	void increaseParam() override;
 	void decreaseParam() override;
 	void printParam(uint8_t yDisplayPosition) override;
-	void setData() override;
+//	void setData() override;
 
 	void setStrings(std::initializer_list<const char*> stringList, uint8_t maxStringLength);
 
-	void (*increaseCallback)(void *valuePtr){nullptr};
-	void (*decreaseCallback)(void *valuePtr){nullptr};
-	uint32_t (*valueCallback)(void *valuePtr){nullptr};
+	void (*increaseCallback)(int16_t *valuePtr){nullptr};
+	void (*decreaseCallback)(int16_t *valuePtr){nullptr};
+	uint32_t (*valueCallback)(int16_t *valuePtr){nullptr};
 
-	void (*encoderPressCallback)(void* parameter){nullptr};
-	void (*keyDownCallback)(void* parameter){nullptr};
-	const char* (*nameCallback)(void* parameter){nullptr};
-	void (*printCallback)(void* parameter){nullptr};
-	void (*setToDspCallback)(void* parameter){nullptr};
+	void (*encoderPressCallback)(int16_t* parameter){nullptr};
+	void (*keyDownCallback)(int16_t* parameter){nullptr};
+	const char* (*nameCallback)(int16_t* parameter){nullptr};
+	void (*printCallback)(int16_t* parameter){nullptr};
+//	void (*setToDspCallback)(int16_t* parameter){nullptr};
 
 private:
 	TDisplayType m_displayType;

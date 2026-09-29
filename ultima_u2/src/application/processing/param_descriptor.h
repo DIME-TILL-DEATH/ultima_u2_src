@@ -7,12 +7,12 @@ typedef void (*setter_handler_t)(uint32_t value);
 
 typedef struct
 {
-	uint16_t* ptr;
-	uint16_t min;
-	uint16_t max;
-	const char* handlerStr;
+	int16_t value;
+	int16_t min;
+	int16_t max;
+//	const char* handlerStr;
 	const char* name;
-	setter_handler_t setterHandler;
+//	setter_handler_t setterHandler;
 }TParamDescriptor;
 
 

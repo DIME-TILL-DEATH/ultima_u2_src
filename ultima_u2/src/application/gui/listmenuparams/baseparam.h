@@ -43,8 +43,8 @@ public:
 	gui_param_type type() const {return m_type;};
 	virtual const char* name();
 
-	void setValuePtr(uint16_t* valuePtr) {m_descriptor->ptr = valuePtr;};
-	void* valuePtr() const {return m_descriptor->ptr;};
+//	void setValuePtr(uint16_t* valuePtr) {m_descriptor->ptr = valuePtr;};
+//	void* valuePtr() const {return m_descriptor->ptr;};
 
 	virtual uint32_t value() const;
 	virtual void increaseParam();

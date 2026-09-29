@@ -77,14 +77,14 @@ void RealParam::calcDisplayValue()
 
 	int32_t fullValue = 0;
 
-	if(m_byteSize>1)
-	{
-		memcpy(&fullValue, m_descriptor->ptr, m_byteSize);
-	}
-	else
-	{
-		fullValue = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
-	}
+//	if(m_byteSize>1)
+//	{
+//		memcpy(&fullValue, m_descriptor->ptr, m_byteSize);
+//	}
+//	else
+//	{
+//		fullValue = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
+//	}
 
-	m_displayValue = m_k1 + fullValue*m_k2;
+	m_displayValue = m_k1 + m_descriptor->value*m_k2;
 }

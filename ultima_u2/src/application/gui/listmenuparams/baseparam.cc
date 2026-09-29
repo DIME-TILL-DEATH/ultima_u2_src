@@ -69,9 +69,9 @@ uint32_t BaseParam::value() const
 	if(!m_descriptor) return 0;
 	else
 	{
-		uint32_t fullValue = 0;
-		memcpy(&fullValue, m_descriptor->ptr, m_byteSize);
-		return fullValue + m_offset;
+//		uint32_t fullValue = 0;
+//		memcpy(&fullValue, m_descriptor->ptr, m_byteSize);
+		return m_descriptor->value + m_offset;
 	}
 }
 
@@ -84,16 +84,16 @@ void BaseParam::increaseParam()
 {
 	if(!m_descriptor) return;
 
-	int32_t data = 0;
-	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
-	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
+//	int32_t data = 0;
+//	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
+//	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
-	if(data < m_maxValue)
+	if(m_descriptor->value < m_maxValue)
 	{
 		if(m_type != GUI_PARAMETER_NUM)
 			encoderSpeedIncrease();
 		else
-			*(uint8_t*)(m_descriptor->ptr) += m_stepSize;
+			m_descriptor->value += m_stepSize;
 	}
 }
 
@@ -101,16 +101,16 @@ void BaseParam::decreaseParam()
 {
 	if(!m_descriptor) return;
 
-	int32_t data = 0;
-	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
-	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
+//	int32_t data = 0;
+//	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
+//	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
-	if(data > m_minValue)
+	if(m_descriptor->value > m_minValue)
 	{
 		if(m_type != GUI_PARAMETER_NUM)
 			encoderSpeedDecrease();
 		else
-			*(uint8_t*)(m_descriptor->ptr) -= m_stepSize;
+			m_descriptor->value -= m_stepSize;
 	}
 }
 
@@ -118,13 +118,13 @@ void BaseParam::setData()
 {
 	if(!m_descriptor) return;
 
-	if(m_descriptor->setterHandler)
-	{
-		int32_t data = 0;
-		memcpy(&data, m_descriptor->ptr, m_byteSize);
-		m_descriptor->setterHandler(data);
-		return;
-	}
+//	if(m_descriptor->setterHandler)
+//	{
+//		int32_t data = 0;
+//		memcpy(&data, m_descriptor->ptr, m_byteSize);
+//		m_descriptor->setterHandler(data);
+//		return;
+//	}
 }
 
 void BaseParam::printParam(uint8_t yDisplayPosition)
@@ -140,7 +140,7 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 	{
 		case BaseParam::GUI_PARAMETER_LEVEL:
 //			DisplayTask->ParamInd(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
-			display_task->par_indic(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
+			display_task->par_indic(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->value) + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_MIX:
 //			DisplayTask->ParamIndMix(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
@@ -164,8 +164,8 @@ void BaseParam::encoderSpeedIncrease()
 	tim6.disable();
 
 	int32_t data = 0;
-	if(m_byteSize > 1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
-	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
+//	if(m_byteSize > 1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
+//	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
 
 	if(tim6.update_interrupt_flag())
@@ -198,7 +198,8 @@ void BaseParam::encoderSpeedIncrease()
 		}
 	}
 
-	memcpy(m_descriptor->ptr, &data, m_byteSize);
+//	memcpy(m_descriptor->ptr, &data, m_byteSize);
+	m_descriptor->value = data;
 
 	tim6.counter = 0;
     tim6.update_interrupt_flag_clear();
@@ -212,8 +213,8 @@ void BaseParam::encoderSpeedDecrease()
 	tim6.disable();
 
 	int32_t data = 0;
-	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
-	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
+//	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
+//	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
 
 	if(tim6.update_interrupt_flag())
@@ -246,7 +247,9 @@ void BaseParam::encoderSpeedDecrease()
 		}
 	}
 
-	memcpy(m_descriptor->ptr, &data, m_byteSize);
+//	memcpy(m_descriptor->ptr, &data, m_byteSize);
+
+	m_descriptor->value = data;
 
 	tim6.counter = 0;
 	tim6.update_interrupt_flag_clear();

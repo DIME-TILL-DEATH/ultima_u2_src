@@ -2,6 +2,13 @@
 #define _PROCESSING_CONFIGS_CABSIM_CONFIG_H_
 
 #include "appdefs.h"
+#include "preset.h"
+
+struct TCabsimFile;
+typedef struct TCabsimFile TCabsimFile;
+typedef TCabsimFile TCabsimConfig;
+
+TPreset makePresetFromCabsimConfig(const TCabsimConfig& config);
 
 enum
 {/*OD on*/
@@ -244,7 +251,7 @@ enum
 
 };
 
-typedef struct {
+typedef struct TCabsimFile {
 
 	uint8_t od_on;		// 0
 	uint8_t preamp_on;
@@ -527,7 +534,6 @@ typedef struct {
 	/* tuner */
 	uint8_t Tu;
 	uint8_t sel_tu;
-} cabsim_file_t;
-
+}TCabsimFile;
 
 #endif /* _PROCESSING_CONFIGS_CABSIM_CONFIG_H_ */

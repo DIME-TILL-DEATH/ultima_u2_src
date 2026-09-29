@@ -88,13 +88,13 @@ void StringListParam::increaseParam()
 {
 	if(!m_descriptor) return;
 
-	if(*(uint8_t*)(m_descriptor->ptr) < m_maxValue)
+	if(m_descriptor->value < m_maxValue)
 	{
-		*(uint8_t*)(m_descriptor->ptr) += 1;
+		m_descriptor->value  += 1;
 
 		for(int i=0; i<m_affectedParamsCount; i++)
 		{
-			m_affectedParamsList[i]->setDisabled(m_disableMask[*(uint8_t*)(m_descriptor->ptr)][i]);
+			m_affectedParamsList[i]->setDisabled(m_disableMask[m_descriptor->value ][i]);
 		}
 	}
 }
@@ -103,13 +103,13 @@ void StringListParam::decreaseParam()
 {
 	if(!m_descriptor) return;
 
-	if(*(uint8_t*)(m_descriptor->ptr) > m_minValue)
+	if(m_descriptor->value  > m_minValue)
 	{
-		*(uint8_t*)(m_descriptor->ptr) -= 1;
+		m_descriptor->value  -= 1;
 
 		for(int i=0; i<m_affectedParamsCount; i++)
 		{
-			m_affectedParamsList[i]->setDisabled(m_disableMask[*(uint8_t*)(m_descriptor->ptr)][i]);
+			m_affectedParamsList[i]->setDisabled(m_disableMask[m_descriptor->value][i]);
 		}
 	}
 }
@@ -118,6 +118,6 @@ void StringListParam::printParam(uint8_t yDisplayPosition)
 {
 	if(m_disabled) return;
 
-	if(*(uint8_t*)(m_descriptor->ptr) < m_stringCount)
-		display_task->line_5x7(m_xDisplayPosition, yDisplayPosition, getString(*(uint8_t*)(m_descriptor->ptr)), Font::fnsNormal);
+	if(m_descriptor->value < m_stringCount)
+		display_task->line_5x7(m_xDisplayPosition, yDisplayPosition, getString(m_descriptor->value), Font::fnsNormal);
 }
