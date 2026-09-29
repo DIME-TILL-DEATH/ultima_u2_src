@@ -15,6 +15,7 @@
 #include "fpv4-sp-d16-instr.h"
 
 #include "tasks/display_task.h"
+#include "tasks/dsp_task.h"
 
 Gate gate_pres;
 Gate gate_glob;
@@ -163,6 +164,10 @@ IRQ_HANDLER(dma2_stream5)
       dma2.stream5_transfer_complete_interrupt_clear();
       dma_ht_fl = 1;
   }
+  
+  if(dsp_task)
+		dsp_task->trigger();
+
 //-----------------------------------------------------convert ADC to float----------------------------------
   for(uint8_t i = 0 ; i < block_samples; i++)
   {
