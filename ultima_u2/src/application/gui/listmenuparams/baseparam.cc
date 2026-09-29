@@ -2,7 +2,7 @@
 
 #include "gui/paramlistmenu.h"
 
-//#include "display_task.h"
+#include "tasks/display_task.h"
 //#include "io_task.h"
 //#include "sharc_task.h"
 
@@ -125,48 +125,38 @@ void BaseParam::setData()
 		m_descriptor->setterHandler(data);
 		return;
 	}
-
-//	if(m_descriptor->dspPosition == NOT_SEND_POS) return;
-//
-//	for(uint8_t i=0; i<m_byteSize; i++)
-//	{
-//		if(m_descriptor->dspPosition == PARAM_EQUAL_POS)
-//			SharcTask->setParameter(m_descriptor->dspAddress, *((uint8_t*)m_descriptor->ptr + i) + m_offset, 0);
-//		else
-//			SharcTask->setParameter(m_descriptor->dspAddress,	m_descriptor->dspPosition + i,
-//					*((uint8_t*)m_descriptor->ptr + m_byteSize - 1 - i) + m_offset);
-//	}
 }
 
 void BaseParam::printParam(uint8_t yDisplayPosition)
 {
-//	if(m_disabled)
-//	{
-//		DisplayTask->ClearString(m_xDisplayPosition, yDisplayPosition, Font::fntSystem, 8);
-//		return;
-//	}
-//
-//	// переделать на IndicatorType
-//	switch(m_type)
-//	{
-//		case BaseParam::GUI_PARAMETER_LEVEL:
+	if(m_disabled)
+	{
+		display_task->line_5x7_clean(m_xDisplayPosition, yDisplayPosition, "     ");
+		return;
+	}
+
+	// переделать на IndicatorType
+	switch(m_type)
+	{
+		case BaseParam::GUI_PARAMETER_LEVEL:
 //			DisplayTask->ParamInd(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
-//			break;
-//		case BaseParam::GUI_PARAMETER_MIX:
+			display_task->par_indic(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
+			break;
+		case BaseParam::GUI_PARAMETER_MIX:
 //			DisplayTask->ParamIndMix(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
-//			break;
-//		case BaseParam::GUI_PARAMETER_PAN:
+			break;
+		case BaseParam::GUI_PARAMETER_PAN:
 //			if(m_inverse) DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, m_maxValue - *(uint8_t*)(m_descriptor->ptr) + m_offset);
 //			else DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
-//			break;
-//		case BaseParam::GUI_PARAMETER_VOLUME:
+			break;
+		case BaseParam::GUI_PARAMETER_VOLUME:
 //			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
-//			break;
-//		case BaseParam::GUI_PARAMETER_NUM:
+			break;
+		case BaseParam::GUI_PARAMETER_NUM:
 //			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
-//			break;
-//		default: break;
-//	}
+			break;
+		default: break;
+	}
 }
 
 void BaseParam::encoderSpeedIncrease()

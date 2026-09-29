@@ -110,13 +110,17 @@ void ParamListMenu::refresh()
 
 void ParamListMenu::task()
 {
-/*	if(m_paramsCount == 1) m_encoderKnobSelected = true;
+	if(m_paramsCount == 1) m_encoderKnobSelected = true;
+
+
 
 	if(!m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-								FONT_BLINKING, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
-	}*/
+		display_task->line_5x7(leftPad, m_currentParamNum % paramsOnPage, m_paramsList[m_currentParamNum]->name(), FONT_BLINKING);
+
+//		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
+//								FONT_BLINKING, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+	}
 }
 
 void ParamListMenu::encoderPressed()
@@ -215,16 +219,17 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 
 	if((newPageNumber != m_currentPageNumber || forceDrawIcon) && m_drawIcon)
 	{
-		strelka_t drawStrelka;
-
-		if(newPageNumber < m_pagesCount - 1) drawStrelka = STRELKA_DOWN;
-		if(newPageNumber > 0 && newPageNumber < m_pagesCount) drawStrelka = STRELKA_UPDOWN;
-		if(newPageNumber == m_pagesCount - 1) drawStrelka = STRELKA_UP;
-		if(m_pagesCount == 1) drawStrelka = STRELKA_NONE;
-
 		display_task->clear();
-		DisplayTask->IconAndArrows(m_icon, drawStrelka);
+		if(m_pagesCount > 1)
+		{
+			uint8_t drawStrelka;
 
+			if(newPageNumber < m_pagesCount - 1) drawStrelka = 0;
+			if(newPageNumber > 0 && newPageNumber < m_pagesCount) drawStrelka = 1;
+			if(newPageNumber == m_pagesCount - 1) drawStrelka = 2;
+
+			display_task->ic_print(0, 2);
+		}
 	}
 	m_currentPageNumber = newPageNumber;
 
