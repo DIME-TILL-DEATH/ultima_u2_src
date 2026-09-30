@@ -4,19 +4,8 @@
 
 #include "gui/fonts/font.h"
 
-//#include "bitmaps.h"
-//#include "eeprom.h"
-//
-//#include "display_task.h"
-//#include "filesystem_task.h"
-//#include "io_task.h"
-//#include "tasks/ui_task.h"
-//#include "controllers_task.h"
-//
-//#include "tapmenu.h"
 #include "listmenuparams/stringoutparam.h"
 
-//#include "system.h"
 
 #include "tasks/display_task.h"
 

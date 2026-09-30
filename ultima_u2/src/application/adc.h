@@ -15,5 +15,3 @@ uint16_t adc_get_val();
 
 #endif /*__ADC_H__*/
 
-
-

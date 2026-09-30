@@ -25,7 +25,7 @@
 
 #include "tasks/display_task.h"
 
-AbstractMenu* mainMenu = nullptr;
+AbstractMenu *mainMenu = nullptr;
 
 extern Gate gate_pres;
 extern Gate gate_glob;
@@ -2303,7 +2303,6 @@ void gui_task_t::code()
 	display_task->line_12x13(16, 6, (char*) "IR CabSim/FX", 0);
 	m_vol_fl = 0;
 	mas_v = powf(master_volume, 2.0f) * (1.0f / powf(127.0f, 2.0f));
-
 
 	mainMenu = new AbstractMenu();
 	currentMenu = mainMenu;

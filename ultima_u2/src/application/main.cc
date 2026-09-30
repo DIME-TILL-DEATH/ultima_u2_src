@@ -21,7 +21,8 @@ int main(void)
 
 	bool usb_suspend = !controls.usb_vbus();
 
-	if(usb_suspend) controls.usb_vbus_irq_enable();
+	if(usb_suspend)
+		controls.usb_vbus_irq_enable();
 
 	msc_task = new msc_task_t("MSC", 5 * configMINIMAL_STACK_SIZE, 0, usb_suspend);
 	fs_browser_task = new fs_browser_task_t("FSB", 10 * configMINIMAL_STACK_SIZE, 0, !usb_suspend);

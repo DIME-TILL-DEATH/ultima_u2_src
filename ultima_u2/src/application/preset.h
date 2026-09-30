@@ -4,13 +4,13 @@
 #include "processing/param_descriptor.h"
 #include "module.h"
 
-
-typedef struct{
+typedef struct
+{
 	char name[16];
 	char author[16];
 	uint8_t moduleCount;
 	TModuleDescriptor module[10];
-}TPreset;
+} TPreset;
 
 extern TPreset currentPreset;
 

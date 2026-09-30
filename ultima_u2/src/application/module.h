@@ -25,14 +25,13 @@ enum TModuleType
 
 enum TModuleChannel
 {
-	UNKNOWN_CHANNEL = 0,
-	MONO_CHANNEL,
-	STEREO_CHANNEL
+	UNKNOWN_CHANNEL = 0, MONO_CHANNEL, STEREO_CHANNEL
 };
 
 typedef void (*updateModuleParametersHandler)(void);
 
-typedef struct{
+typedef struct
+{
 	TModuleType type;
 	TModuleChannel channel;
 	TParamDescriptor parameter[16];
@@ -41,8 +40,8 @@ typedef struct{
 	uint8_t instaceId;	// number of module type instance in the preset
 
 	bool needUpdateParameters;
-	AbstractStage* processingStage;
-}TModuleDescriptor;
+	AbstractStage *processingStage;
+} TModuleDescriptor;
 
 TModuleDescriptor makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t moduleId, uint8_t instanceId);
 
@@ -74,10 +73,10 @@ typedef struct
 	uint8_t low_lead;
 	uint8_t mid_lead;
 	uint8_t high_lead;
-}TPreampModule;
+} TPreampModule;
 
 TPreampModule makePreampModuleState(void);
 
-void preampChangeType(TModuleDescriptor& module, const TPreampModule& state, uint8_t type);
+void preampChangeType(TModuleDescriptor &module, const TPreampModule &state, uint8_t type);
 
 #endif /* _MODULE_H_ */

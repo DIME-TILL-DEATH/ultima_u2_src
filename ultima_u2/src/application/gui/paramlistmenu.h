@@ -31,22 +31,22 @@ public:
 	static constexpr uint8_t leftPad = 0;
 
 protected:
-	uint8_t m_currentParamNum = 0;
+	uint8_t m_currentParamNum{0};
 
 	BaseParam* m_paramsList[maxParamCount];
 	uint8_t m_paramsCount{0};
 
-	uint8_t m_firstSelectableParam;
-	uint8_t m_lastSelectableParam;
+	uint8_t m_firstSelectableParam{0};
+	uint8_t m_lastSelectableParam{0};
 
 //	System::TapDestination m_tapDst{System::TapDestination::TAP_OFF};
 //	bool m_drawIcon{true};
 
 	int8_t m_currentPageNumber{-1};
 
-	uint8_t m_pagesCount;
+	uint8_t m_pagesCount{1};
 
-	bool m_encoderKnobSelected;
+	bool m_encoderKnobSelected{false};
 
 	void printPage(bool forceDrawIcon = false);
 };

@@ -8,6 +8,5 @@
 #include "msc.h"
 #include "fs_browser.h"
 
-controls_t controls ;
-
+controls_t controls;
 

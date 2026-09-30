@@ -19,7 +19,8 @@ float filt_cos[5];
 float filt_sin[5];
 float filt_alpha[5];
 
-const float freq[5] = {120.0f,360.0f,800.0f,2000.0f,6000.0f};
+const float freq[5] =
+{ 120.0f, 360.0f, 800.0f, 2000.0f, 6000.0f };
 float freq1[5];
 volatile float filt_q;
-float w0 = 2.0f*FILT_PI/48000.0f;
+float w0 = 2.0f * FILT_PI / 48000.0f;

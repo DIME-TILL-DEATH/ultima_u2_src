@@ -5,13 +5,15 @@
 
 ModuleMenu::ModuleMenu(AbstractMenu* parent, gui_menu_type menuType, TModuleDescriptor* module)
 	: ParamListMenu(parent, menuType){
-	m_module = module;
-}
+	m_module = module;}
 
 void ModuleMenu::encoderPressed()
 {
 	ParamListMenu::encoderPressed();
 	m_module->needUpdateParameters = true;
+
+	// TODO consoleEvent for expression, fsw and gui: console_task_>write("event pset m%d p%d v%d", m_module->moduleId,
+	//m_currentParamNum, m_module->parameter[m_currentParamNum].value);
 }
 
 void ModuleMenu::encoderClockwise()

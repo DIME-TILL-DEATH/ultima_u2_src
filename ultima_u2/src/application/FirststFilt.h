@@ -20,32 +20,32 @@ public:
 	inline float filt(float in)
 	{
 		in0 = in;
-		out0 = in0*a0 + in1*a1 + out1*b1;
+		out0 = in0 * a0 + in1 * a1 + out1 * b1;
 		in1 = in0;
 		out1 = out0;
 		return out0;
 	}
 	inline void SetLPF(float fCut)
 	{
-	    float Norm;
-	    fCut *= filt_pi2;
-	    Norm = 1.0f / (fCut + LpHpW);
-	    b1 = (LpHpW - fCut) * Norm;
-	    a0 = a1 = fCut * Norm;
+		float Norm;
+		fCut *= filt_pi2;
+		Norm = 1.0f / (fCut + LpHpW);
+		b1 = (LpHpW - fCut) * Norm;
+		a0 = a1 = fCut * Norm;
 	}
 	inline void SetHPF(float fCut)
 	{
-	    float Norm;
-	    fCut *= filt_pi2;
-	    Norm = 1.0f / (fCut + LpHpW);
-	    a0 = LpHpW * Norm;
-	    a1 = -a0;
-	    b1 = (LpHpW - fCut) * Norm;
+		float Norm;
+		fCut *= filt_pi2;
+		Norm = 1.0f / (fCut + LpHpW);
+		a0 = LpHpW * Norm;
+		a1 = -a0;
+		b1 = (LpHpW - fCut) * Norm;
 	}
 
 private:
 
-	float in0 , in1 , out0 , out1 , a0 , a1 , b1;
+	float in0, in1, out0, out1, a0, a1, b1;
 };
 
 class PassFilt
@@ -57,12 +57,19 @@ class PassFilt
 
 public:
 
-	inline float filt(float in , uint8_t num)
+	inline float filt(float in, uint8_t num)
 	{
-		switch(num){
-		case 1:in = filt1.filt(in);break;
-		case 2:in = filt2.filt(filt1.filt(in));break;
-		case 3:in = filt3.filt(filt2.filt(filt1.filt(in)));break;
+		switch(num)
+		{
+		case 1:
+			in = filt1.filt(in);
+			break;
+		case 2:
+			in = filt2.filt(filt1.filt(in));
+			break;
+		case 3:
+			in = filt3.filt(filt2.filt(filt1.filt(in)));
+			break;
 		}
 		return in;
 	}

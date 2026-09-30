@@ -3,15 +3,24 @@
 #ifndef SRC_APPLICATION_ATTRELENV_H_
 #define SRC_APPLICATION_ATTRELENV_H_
 
-class AttRelEnv {
+class AttRelEnv
+{
 public:
-	AttRelEnv(){};
-	virtual ~AttRelEnv(){};
-
-	inline float attrel(float env,float coef_at,float coef_rel)
+	AttRelEnv()
 	{
-		if ( env > envdB_ )envdB_ = env + coef_at * ( envdB_ - env );
-		else envdB_ = env + coef_rel * ( envdB_ - env );
+	}
+	;
+	virtual ~AttRelEnv()
+	{
+	}
+	;
+
+	inline float attrel(float env, float coef_at, float coef_rel)
+	{
+		if(env > envdB_)
+			envdB_ = env + coef_at * (envdB_ - env);
+		else
+			envdB_ = env + coef_rel * (envdB_ - env);
 
 		return envdB_;
 	}

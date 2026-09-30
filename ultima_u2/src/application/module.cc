@@ -1,6 +1,6 @@
 #include "module.h"
 
-static void setParam(TModuleDescriptor& module, uint8_t index, const char* name, uint16_t min, uint16_t max)
+static void setParam(TModuleDescriptor &module, uint8_t index, const char *name, uint16_t min, uint16_t max)
 {
 	module.parameter[index].value = 0;
 	module.parameter[index].min = min;
@@ -8,20 +8,20 @@ static void setParam(TModuleDescriptor& module, uint8_t index, const char* name,
 	module.parameter[index].name = name;
 }
 
-static void addParam(TModuleDescriptor& module, const char* name, uint16_t min = 0, uint16_t max = 127)
+static void addParam(TModuleDescriptor &module, const char *name, uint16_t min = 0, uint16_t max = 127)
 {
 	// module.parameter array was expanded to 32 entries in preset.h
-	if (module.parameterCount >= 32)
+	if(module.parameterCount >= 32)
 	{
 		return;
 	}
 	setParam(module, module.parameterCount++, name, min, max);
 }
 
-static void initModuleParameters(TModuleDescriptor& module)
+static void initModuleParameters(TModuleDescriptor &module)
 {
 	module.parameterCount = 0;
-	for (uint8_t i = 0; i < 32; ++i)
+	for(uint8_t i = 0;i < 32;++i)
 	{
 		module.parameter[i].value = 0;
 		module.parameter[i].min = 0;
@@ -221,14 +221,14 @@ TPreampModule makePreampModuleState(void)
 
 static uint16_t preamp_current_vals[5]; // gain, volume, low, mid, high
 
-void preampChangeType(TModuleDescriptor& module, const TPreampModule& state, uint8_t type)
+void preampChangeType(TModuleDescriptor &module, const TPreampModule &state, uint8_t type)
 {
 	// Map type to values: 0/1 -> clean, 2 -> crunch(od), 3 -> lead
 	uint8_t gain = 0;
 	uint8_t volume = 0;
 	uint8_t low = 0, mid = 0, high = 0;
 
-	switch (type)
+	switch(type)
 	{
 	case 2: // crunch/od
 		gain = state.gain_crunch;
