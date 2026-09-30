@@ -1,6 +1,6 @@
 #include "module.h"
 
-static void setParam(TModule& module, uint8_t index, const char* name, uint16_t min, uint16_t max)
+static void setParam(TModuleDescriptor& module, uint8_t index, const char* name, uint16_t min, uint16_t max)
 {
 	module.parameter[index].value = 0;
 	module.parameter[index].min = min;
@@ -8,7 +8,7 @@ static void setParam(TModule& module, uint8_t index, const char* name, uint16_t 
 	module.parameter[index].name = name;
 }
 
-static void addParam(TModule& module, const char* name, uint16_t min = 0, uint16_t max = 127)
+static void addParam(TModuleDescriptor& module, const char* name, uint16_t min = 0, uint16_t max = 127)
 {
 	// module.parameter array was expanded to 32 entries in preset.h
 	if (module.parameterCount >= 32)
@@ -18,7 +18,7 @@ static void addParam(TModule& module, const char* name, uint16_t min = 0, uint16
 	setParam(module, module.parameterCount++, name, min, max);
 }
 
-static void initModuleParameters(TModule& module)
+static void initModuleParameters(TModuleDescriptor& module)
 {
 	module.parameterCount = 0;
 	for (uint8_t i = 0; i < 32; ++i)
@@ -30,9 +30,9 @@ static void initModuleParameters(TModule& module)
 	}
 }
 
-TModule makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t moduleId, uint8_t instanceId)
+TModuleDescriptor makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t moduleId, uint8_t instanceId)
 {
-	TModule module;
+	TModuleDescriptor module;
 	memset(&module, 0, sizeof(module));
 	module.type = type;
 	module.channel = channel;
@@ -42,23 +42,23 @@ TModule makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t module
 	return module;
 }
 
-TModule makeNoiseGateModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makeNoiseGateModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(NG_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(NG_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "on", 0, 1);
 	addParam(module, "threshold", 0, 127);
 	addParam(module, "attack", 0, 127);
 	addParam(module, "decay", 0, 127);
 
-	module.updateParameters = nullptr;
+	module.processingStage = nullptr;
 	module.needUpdateParameters = true;
 	return module;
 }
 
-TModule makeCompressorModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makeCompressorModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(CM_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(CM_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "Compress.", 0, 1);
 	addParam(module, "Threshold", 0, 127);
@@ -69,9 +69,9 @@ TModule makeCompressorModule(uint8_t moduleId, uint8_t instanceId, TModuleChanne
 	return module;
 }
 
-TModule makePreampModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makePreampModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(PR_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(PR_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "gain", 0, 127);
 	addParam(module, "volume", 0, 127);
@@ -88,9 +88,9 @@ TModule makePreampModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel ch
 	return module;
 }
 
-TModule makeAmpModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makeAmpModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(PA_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(PA_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "on", 0, 1);
 	addParam(module, "master", 0, 127);
@@ -100,9 +100,9 @@ TModule makeAmpModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel chann
 	return module;
 }
 
-TModule makeCabModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makeCabModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(IR_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(IR_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "on", 0, 1);
 	addParam(module, "ir", 0, 127);
@@ -110,9 +110,9 @@ TModule makeCabModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel chann
 	return module;
 }
 
-TModule makeEqModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makeEqModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(EQ_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(EQ_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "on", 0, 1);
 	addParam(module, "gain", 0, 127);
@@ -125,9 +125,9 @@ TModule makeEqModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channe
 	return module;
 }
 
-TModule makePhaserModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makePhaserModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(PH_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(PH_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "on", 0, 1);
 	addParam(module, "mix", 0, 127);
@@ -141,9 +141,9 @@ TModule makePhaserModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel ch
 	return module;
 }
 
-TModule makeFlangerModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makeFlangerModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(FL_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(FL_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "on", 0, 1);
 	addParam(module, "mix", 0, 127);
@@ -157,9 +157,9 @@ TModule makeFlangerModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel c
 	return module;
 }
 
-TModule makeReverbModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makeReverbModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(RV_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(RV_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "on", 0, 1);
 	addParam(module, "mix", 0, 127);
@@ -176,9 +176,9 @@ TModule makeReverbModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel ch
 	return module;
 }
 
-TModule makeDelayModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+TModuleDescriptor makeDelayModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {
-	TModule module = makeEmptyModule(DL_MODULE, channel, moduleId, instanceId);
+	TModuleDescriptor module = makeEmptyModule(DL_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
 	addParam(module, "on", 0, 1);
 	addParam(module, "mix", 0, 127);
@@ -221,7 +221,7 @@ TPreampModule makePreampModuleState(void)
 
 static uint16_t preamp_current_vals[5]; // gain, volume, low, mid, high
 
-void preampChangeType(TModule& module, const TPreampModule& state, uint8_t type)
+void preampChangeType(TModuleDescriptor& module, const TPreampModule& state, uint8_t type)
 {
 	// Map type to values: 0/1 -> clean, 2 -> crunch(od), 3 -> lead
 	uint8_t gain = 0;

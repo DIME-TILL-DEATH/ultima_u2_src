@@ -15,9 +15,9 @@ void dsp_task_t::code()
 
 		for(int i=0; i<currentPreset.moduleCount; i++)
 		{
-			if(currentPreset.module[i].needUpdateParameters && currentPreset.module[i].updateParameters != nullptr)
+			if(currentPreset.module[i].needUpdateParameters && currentPreset.module[i].processingStage != nullptr)
 			{
-				currentPreset.module[i].updateParameters();
+				currentPreset.module[i].processingStage->updateParams();
 				currentPreset.module[i].needUpdateParameters = false;
 			}
 		}

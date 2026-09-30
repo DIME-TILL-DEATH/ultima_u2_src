@@ -1,8 +1,8 @@
 #ifndef _MODULE_H_
 #define _MODULE_H_
 
-//#include "appdefs.h"
 #include "processing/param_descriptor.h"
+#include "processing/abstractstage.h"
 
 enum TModuleType
 {
@@ -41,21 +41,21 @@ typedef struct{
 	uint8_t instaceId;	// number of module type instance in the preset
 
 	bool needUpdateParameters;
-	updateModuleParametersHandler updateParameters;
-}TModule;
+	AbstractStage* processingStage;
+}TModuleDescriptor;
 
-TModule makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t moduleId, uint8_t instanceId);
+TModuleDescriptor makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t moduleId, uint8_t instanceId);
 
-TModule makeNoiseGateModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
-TModule makeCompressorModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
-TModule makePreampModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
-TModule makeAmpModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
-TModule makeCabModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
-TModule makeEqModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
-TModule makePhaserModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
-TModule makeFlangerModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
-TModule makeReverbModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
-TModule makeDelayModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makeNoiseGateModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makeCompressorModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makePreampModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makeAmpModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makeCabModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makeEqModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makePhaserModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makeFlangerModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makeReverbModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makeDelayModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
 
 typedef struct
 {
@@ -78,6 +78,6 @@ typedef struct
 
 TPreampModule makePreampModuleState(void);
 
-void preampChangeType(TModule& module, const TPreampModule& state, uint8_t type);
+void preampChangeType(TModuleDescriptor& module, const TPreampModule& state, uint8_t type);
 
 #endif /* _MODULE_H_ */

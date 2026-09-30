@@ -1,8 +1,9 @@
 //gui_task->update();  приведет к обновлению в gui_task_t::code()
+#include <gate.h>
 #include "preset.h"
 
 //---------------
-#include "processing/configs/cabsim_config.h"
+#include "configs/cabsim_config.h"
 //----------------
 #include "gui/compressormenu.h"
 //------------------
@@ -17,8 +18,7 @@
 #include "amp_imp.h"
 #include "filt.h"
 #include "FirststFilt.h"
-#include "Gate.h"
-#include "compressor.h"
+#include "processing/compressor.h"
 #include "distor.h"
 #include "phaser.h"
 #include "flanger.h"

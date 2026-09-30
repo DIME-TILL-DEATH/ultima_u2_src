@@ -1,10 +1,10 @@
 #include <string.h>
 
-#include "compressor.h"
+#include "processing/compressor.h"
 #include "cabsim_config.h"
 #include "module.h"
 
-static void setParameterValue(TModule& module, uint8_t index, int16_t value)
+static void setParameterValue(TModuleDescriptor& module, uint8_t index, int16_t value)
 {
 	if (index >= module.parameterCount)
 	{
@@ -13,7 +13,7 @@ static void setParameterValue(TModule& module, uint8_t index, int16_t value)
 	module.parameter[index].value = value;
 }
 
-static void applyPreampValues(TModule& module, const TCabsimConfig& config)
+static void applyPreampValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.preamp_vol);
 	setParameterValue(module, 1, config.preamp_vol);
@@ -29,7 +29,7 @@ static void applyPreampValues(TModule& module, const TCabsimConfig& config)
 	setParameterValue(module, 11, config.preamp_pos);
 }
 
-static void applyAmpValues(TModule& module, const TCabsimConfig& config)
+static void applyAmpValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.amp_on ? 1 : 0);
 	setParameterValue(module, 1, config.a_vol);
@@ -38,14 +38,14 @@ static void applyAmpValues(TModule& module, const TCabsimConfig& config)
 	setParameterValue(module, 4, config.a_t);
 }
 
-static void applyCabValues(TModule& module, const TCabsimConfig& config)
+static void applyCabValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.cab_on ? 1 : 0);
 	setParameterValue(module, 1, config.ir_mix);
 	setParameterValue(module, 2, config.cab_vol);
 }
 
-static void applyEqValues(TModule& module, const TCabsimConfig& config)
+static void applyEqValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.eq_on ? 1 : 0);
 	setParameterValue(module, 1, config.eq1);
@@ -61,7 +61,7 @@ static void applyEqValues(TModule& module, const TCabsimConfig& config)
 	setParameterValue(module, 11, config.preamp_pos);
 }
 
-static void applyNoiseGateValues(TModule& module, const TCabsimConfig& config)
+static void applyNoiseGateValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.Ng ? 1 : 0);
 	setParameterValue(module, 1, config.Ng_th);
@@ -69,7 +69,7 @@ static void applyNoiseGateValues(TModule& module, const TCabsimConfig& config)
 	setParameterValue(module, 3, config.ga_de);
 }
 
-static void applyCompressorValues(TModule& module, const TCabsimConfig& config)
+static void applyCompressorValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.compr_on ? 1 : 0);
 	setParameterValue(module, 1, config.c_thr);
@@ -79,7 +79,7 @@ static void applyCompressorValues(TModule& module, const TCabsimConfig& config)
 	setParameterValue(module, 5, config.c_rel);
 }
 
-static void applyReverbValues(TModule& module, const TCabsimConfig& config)
+static void applyReverbValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.r_vol ? 1 : 0);
 	setParameterValue(module, 1, config.r_vol);
@@ -95,7 +95,7 @@ static void applyReverbValues(TModule& module, const TCabsimConfig& config)
 	setParameterValue(module, 11, config.rev_tail);
 }
 
-static void applyDelayValues(TModule& module, const TCabsimConfig& config)
+static void applyDelayValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.d_vol ? 1 : 0);
 	setParameterValue(module, 1, config.d_vol);
@@ -115,7 +115,7 @@ static void applyDelayValues(TModule& module, const TCabsimConfig& config)
 	setParameterValue(module, 15, config.d_tail);
 }
 
-static void applyPhaserValues(TModule& module, const TCabsimConfig& config)
+static void applyPhaserValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.phaz_on ? 1 : 0);
 	setParameterValue(module, 1, config.ph_mix);
@@ -128,7 +128,7 @@ static void applyPhaserValues(TModule& module, const TCabsimConfig& config)
 	setParameterValue(module, 8, config.ph_poz);
 }
 
-static void applyFlangerValues(TModule& module, const TCabsimConfig& config)
+static void applyFlangerValues(TModuleDescriptor& module, const TCabsimConfig& config)
 {
 	setParameterValue(module, 0, config.flan_on ? 1 : 0);
 	setParameterValue(module, 1, config.fl_mix);
@@ -141,7 +141,7 @@ static void applyFlangerValues(TModule& module, const TCabsimConfig& config)
 	setParameterValue(module, 8, config.fl_poz);
 }
 
-static void addModule(TPreset& preset, const TModule& module)
+static void addModule(TPreset& preset, const TModuleDescriptor& module)
 {
 	if (preset.moduleCount >= 16)
 	{
@@ -153,7 +153,7 @@ static void addModule(TPreset& preset, const TModule& module)
 
 static void addPreampVariant(TPreset& preset, uint8_t moduleId, uint8_t instanceId, TModuleChannel channel, const TCabsimConfig& config)
 {
-	TModule preamp = makePreampModule(moduleId, instanceId, channel);
+	TModuleDescriptor preamp = makePreampModule(moduleId, instanceId, channel);
 	if (config.preamp_vol == 0)
 	{
 		preamp.parameterCount = 3;
@@ -176,71 +176,65 @@ static void addPreampVariant(TPreset& preset, uint8_t moduleId, uint8_t instance
 
 static void addAmp(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
-	TModule amp = makeAmpModule(moduleId, 0, MONO_CHANNEL);
+	TModuleDescriptor amp = makeAmpModule(moduleId, 0, MONO_CHANNEL);
 	applyAmpValues(amp, config);
 	addModule(preset, amp);
 }
 
 static void addCab(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
-	TModule cab = makeCabModule(moduleId, 0, MONO_CHANNEL);
+	TModuleDescriptor cab = makeCabModule(moduleId, 0, MONO_CHANNEL);
 	applyCabValues(cab, config);
 	addModule(preset, cab);
 }
 
 static void addEq(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
-	TModule eq = makeEqModule(moduleId, 0, MONO_CHANNEL);
+	TModuleDescriptor eq = makeEqModule(moduleId, 0, MONO_CHANNEL);
 	applyEqValues(eq, config);
 	addModule(preset, eq);
 }
 
 static void addNoiseGate(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
-	TModule gate = makeNoiseGateModule(moduleId, 0, MONO_CHANNEL);
+	TModuleDescriptor gate = makeNoiseGateModule(moduleId, 0, MONO_CHANNEL);
 	applyNoiseGateValues(gate, config);
 	addModule(preset, gate);
 }
 
 extern Compressor compr;
-void compressorUpdateWrapper()
-{
-	for(uint8_t i = 1;i < 6;i++)
-		compr.comp_par(i | (currentPreset.module[1].parameter[i].value << 8));
-}
-
 static void addCompressor(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
-	TModule comp = makeCompressorModule(moduleId, 0, MONO_CHANNEL);
-	comp.updateParameters = compressorUpdateWrapper;
+	TModuleDescriptor comp = makeCompressorModule(moduleId, 0, MONO_CHANNEL);
+	comp.processingStage = &compr;
 	applyCompressorValues(comp, config);
 	addModule(preset, comp);
 }
 
 static void addReverb(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
-	TModule rev = makeReverbModule(moduleId, 0, MONO_CHANNEL);
+	TModuleDescriptor rev = makeReverbModule(moduleId, 0, MONO_CHANNEL);
 	applyReverbValues(rev, config);
 	addModule(preset, rev);
 }
 
 static void addDelay(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
-	TModule del = makeDelayModule(moduleId, 0, MONO_CHANNEL);
+	TModuleDescriptor del = makeDelayModule(moduleId, 0, MONO_CHANNEL);
 	applyDelayValues(del, config);
 	addModule(preset, del);
 }
 
 static void addPhaser(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
-	TModule phase = makePhaserModule(moduleId, 0, MONO_CHANNEL);
+	TModuleDescriptor phase = makePhaserModule(moduleId, 0, MONO_CHANNEL);
 	applyPhaserValues(phase, config);
 	addModule(preset, phase);
 }
 
 static void addFlanger(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
-	TModule fl = makeFlangerModule(moduleId, 0, MONO_CHANNEL);
+	TModuleDescriptor fl = makeFlangerModule(moduleId, 0, MONO_CHANNEL);
 	applyFlangerValues(fl, config);
 	addModule(preset, fl);
 }
@@ -269,9 +263,6 @@ TPreset makePresetFromCabsimConfig(const TCabsimConfig& config)
 	// Effects in one module
 	addReverb(preset, moduleId++, config);
 	addDelay(preset, moduleId++, config);
-
-
-
 
 	preset.moduleCount = moduleId;
 	return preset;

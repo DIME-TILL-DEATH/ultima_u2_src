@@ -9,7 +9,7 @@ typedef struct{
 	char name[16];
 	char author[16];
 	uint8_t moduleCount;
-	TModule module[10];
+	TModuleDescriptor module[10];
 }TPreset;
 
 extern TPreset currentPreset;

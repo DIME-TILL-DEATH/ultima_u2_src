@@ -1,3 +1,4 @@
+#include <gate.h>
 #include "appdefs.h"
 #include "init.h"
 #include "gui.h"
@@ -7,7 +8,6 @@
 #include "SN1106.h"
 #include "arm_math.h"
 #include "adc.h"
-#include "Gate.h"
 #include "distor.h"
 #include "phaser.h"
 #include "flanger.h"

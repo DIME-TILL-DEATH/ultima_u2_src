@@ -3,7 +3,7 @@
 #include "listmenuparams/baseparam.h"
 #include "listmenuparams/stringlistparam.h"
 
-CompressorMenu::CompressorMenu(AbstractMenu* parent, gui_menu_type menuType, TModule* module)
+CompressorMenu::CompressorMenu(AbstractMenu* parent, gui_menu_type menuType, TModuleDescriptor* module)
 	: ParamListMenu(parent, menuType){
 	m_module = module;
 	BaseParam* paramList[maxParamCount];	uint8_t paramCount = 0;
