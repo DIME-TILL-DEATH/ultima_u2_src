@@ -1,14 +1,14 @@
-#ifndef COMPRESSORMENU_H_
-#define COMPRESSORMENU_H_
+#ifndef MODULEMENU_H_
+#define MODULEMENU_H_
 
 #include "paramlistmenu.h"
 
 #include "module.h"
 
-class CompressorMenu : public ParamListMenu
+class ModuleMenu : public ParamListMenu
 {
 public:
-	CompressorMenu(AbstractMenu* parent, gui_menu_type menuType, TModuleDescriptor* module);
+	ModuleMenu(AbstractMenu* parent, gui_menu_type menuType, TModuleDescriptor* module);
 
 	void encoderPressed() override;
 	void encoderClockwise() override;
@@ -18,4 +18,4 @@ private:
 	TModuleDescriptor* m_module;
 };
 
-#endif /* COMPRESSORMENU_H_ */
+#endif /* MODULEMENU_H_ */

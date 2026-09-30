@@ -1,13 +1,10 @@
 //gui_task->update();  приведет к обновлению в gui_task_t::code()
-#include <gate.h>
+#include "gate.h"
 #include "preset.h"
 
 //---------------
 #include "configs/cabsim_config.h"
 //----------------
-#include "gui/compressormenu.h"
-//------------------
-
 #include "format.h"
 
 #include "init.h"
@@ -23,6 +20,8 @@
 #include "phaser.h"
 #include "flanger.h"
 #include "fs_browser.h"
+
+#include "gui/modulemenufactory.h"
 
 #include "tasks/display_task.h"
 
@@ -326,7 +325,8 @@ void compress_init(void)
 {
 	condish = compresss_men;
 
-	currentMenu = new CompressorMenu(mainMenu, gui_menu_type::MENU_COMPRESSOR, &currentPreset.module[1]);
+//	currentMenu = new CompressorMenu(mainMenu, gui_menu_type::MENU_COMPRESSOR, &currentPreset.module[1]);
+	currentMenu = ModuleMenuFactory::createModuleMenu(mainMenu, &currentPreset.module[1]);
 	currentMenu->show();
 
 	par_num = 0;

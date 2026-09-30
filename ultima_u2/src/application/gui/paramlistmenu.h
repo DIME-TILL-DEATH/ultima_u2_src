@@ -3,16 +3,6 @@
 
 #include "abstractmenu.h"
 
-//#include "sharc.h"
-//
-//#include "system.h"
-//#include "modules.h"
-//
-//#include "display_task.h"
-//
-//#include "bitmaps.h"
-//#include "icons_bitmap.h"
-
 #include "listmenuparams/baseparam.h"
 #include "listmenuparams/stringlistparam.h"
 #include "listmenuparams/submenuparam.h"
