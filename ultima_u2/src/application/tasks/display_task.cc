@@ -6,6 +6,19 @@ display_task_t *display_task;
 
 void display_task_t::code()
 {
+	sh1106_clear();
+	t12x13_line(14, 0, (uint8_t*) "AMT PANGAEA", 0);
+	t12x13_line(28, 3, (uint8_t*) "ULTIMA U2", 0);
+	t12x13_line(20, 6, (uint8_t*) "UNIVERSAL", 0);
+	delay(1500);
+	sh1106_clear();
+
+	char strBuf[16];
+	memset(strBuf, 0, 16);
+	memcpy(&strBuf[0], "Ver.", 4);
+	memcpy(&strBuf[4], FIRMWARE_VER, 7);
+	t12x13_line(21, 3, (uint8_t*) strBuf, 0);
+	delay(500);
 
 	while(1)
 	{

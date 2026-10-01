@@ -26,11 +26,11 @@ int main(void)
 	if(usb_suspend)
 		controls.usb_vbus_irq_enable();
 
-	usb_task = new usb_task_t("MSC", 5 * configMINIMAL_STACK_SIZE, 0, usb_suspend);
+	usb_task = new usb_task_t("USB", 5 * configMINIMAL_STACK_SIZE, 0, usb_suspend);
 	fs_browser_task = new fs_browser_task_t("FSB", 10 * configMINIMAL_STACK_SIZE, 0, !usb_suspend);
 	gui_task = new gui_task_t("GUI", 30 * configMINIMAL_STACK_SIZE, 0, 16);
 	cc_task = new cc_task_t("CC", 5 * configMINIMAL_STACK_SIZE, 0);
-	dsp_task = new dsp_task_t("DSP", 10 * configMINIMAL_STACK_SIZE, 0);
+	dsp_task = new dsp_task_t("DSP", 10 * configMINIMAL_STACK_SIZE, 1);
 	spectrum_task = new spectrum_task_t("ST", 5 * configMINIMAL_STACK_SIZE, 0);
 
 	scheduler_t::start();

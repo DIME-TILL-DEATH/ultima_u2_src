@@ -2282,25 +2282,14 @@ void gui_task_t::code()
 	prog_ch();
 	eq_num = prog_data[od_on];
 	prog_data[od_on] = 1;
-	display_task->clear();
-	display_task->line_12x13(14, 0, (char*) "AMT PANGAEA", 0);
-	display_task->line_12x13(28, 3, (char*) "ULTIMA U2", 0);
-	display_task->line_12x13(16, 6, (char*) "IR CabSim/FX", 0);
-	delay(1500);
-	display_task->clear();
 
-	emb_string fw_version_string;
-//	const uint8_t amt_ver[]= FIRMWARE_VER;
-//	emb_printf::sprintf(fw_version_string, "Ver.%s", amt_ver);
-//	display_task->line_12x13(21, 3, fw_version_string.c_str(), 0);
-	delay(500);
+	//----------------------------------------
 
 	prog_data[od_on] = eq_num;
 	display_task->clear();
 	start_irq();
 	cut = 1;
 	gui_task->main_screen(0);
-	display_task->line_12x13(16, 6, (char*) "IR CabSim/FX", 0);
 	m_vol_fl = 0;
 	mas_v = powf(master_volume, 2.0f) * (1.0f / powf(127.0f, 2.0f));
 
