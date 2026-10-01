@@ -1,7 +1,5 @@
-#include "appdefs.h"
-
 #include "gui.h"
-#include "display/sh1106.h"
+//#include "display/sh1106.h"
 #include "msc.h"
 #include "controls.h"
 #include "fs_browser.h"
@@ -11,11 +9,15 @@
 #include "tasks/cc_task.h"
 #include "tasks/dsp_task.h"
 
+#include "preset.h"
+
 void init(void);
 //----------------------------------------------------------------------------
 int main(void)
 {
 	init();
+
+	memset(&currentPreset, 0, sizeof(currentPreset));
 
 	display_task = new display_task_t("DIS", 5 * configMINIMAL_STACK_SIZE, 0);
 
