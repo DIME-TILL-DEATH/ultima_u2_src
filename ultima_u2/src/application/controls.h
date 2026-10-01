@@ -1,10 +1,3 @@
-/*
- * controls.cc
- *
- *  Created on: 9 мар. 2019 г.
- *      Author: klen
- */
-
 #ifndef __CONTROLS_H__
 #define __CONTROLS_H__
 

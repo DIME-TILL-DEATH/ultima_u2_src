@@ -188,7 +188,7 @@ void loader_task_t::recovery()
 
    reset_perepherial();
 
-   msc_task = new msc_task_t("MSC" , 20*configMINIMAL_STACK_SIZE, 0) ;
+   usb_task = new usb_task_t("MSC" , 20*configMINIMAL_STACK_SIZE, 0) ;
 
    display_task->clear();
    display_task->string(5 , 30, "recovery mode") ;

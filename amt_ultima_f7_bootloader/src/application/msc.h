@@ -7,7 +7,7 @@
 #include "usbd_desc.h"
 #include "usbd_msc.h"
 
-class msc_task_t : public task_t
+class usb_task_t : public task_t
 {
   public:
 
@@ -16,7 +16,7 @@ class msc_task_t : public task_t
        pcd.handler_mode = pool ;
      }
 
-     virtual ~msc_task_t() {} ;
+     virtual ~usb_task_t() {} ;
 
   protected:
 
@@ -30,7 +30,7 @@ class msc_task_t : public task_t
      usbd_t usbd;
 };
 
-extern msc_task_t* msc_task ;
+extern usb_task_t* usb_task ;
 
 #endif /*__MSC_H__*/
 

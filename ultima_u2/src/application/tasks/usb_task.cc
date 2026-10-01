@@ -1,4 +1,4 @@
-#include "msc.h"
+#include "usb_task.h"
 
 #include "usbd_storage_if.h"
 #include "controls.h"
@@ -7,9 +7,9 @@
 
 #include "tasks/display_task.h"
 
-msc_task_t *msc_task;
+usb_task_t *usb_task;
 
-void msc_task_t::code()
+void usb_task_t::code()
 {
 	start();
 
@@ -20,7 +20,7 @@ void msc_task_t::code()
 	}
 }
 
-void msc_task_t::start()
+void usb_task_t::start()
 {
 	usbd_init(&pcd, &usbd, &usbd_descriptors, full_speed);
 	usbd_register_class(&usbd, &msc_usbd_class);
@@ -31,7 +31,7 @@ void msc_task_t::start()
 
 	controls.usb_vbus_irq_disable();
 }
-void msc_task_t::stop()
+void usb_task_t::stop()
 {
 	usbd_stop(&usbd);
 	usbd_deinit(&usbd);
@@ -45,7 +45,7 @@ void msc_task_t::stop()
 
 }
 
-void msc_task_t::state_handler()
+void usb_task_t::state_handler()
 {
 	device_state_t curr_device_state = device_state();
 	if((curr_device_state == configured) && (prev_device_state != configured))

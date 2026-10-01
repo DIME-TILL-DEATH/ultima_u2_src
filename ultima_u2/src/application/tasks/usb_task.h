@@ -8,7 +8,7 @@
 #include "usbd_msc.h"
 #include "ff.h"
 
-class msc_task_t: public task_t
+class usb_task_t: public task_t
 {
 public:
 
@@ -17,13 +17,13 @@ public:
 		undefined, defaults, addressed, configured, suspended
 	};
 
-	inline msc_task_t(const char *name, const int stack_size, const int priority, bool suspend) :
+	inline usb_task_t(const char *name, const int stack_size, const int priority, bool suspend) :
 			task_t(name, stack_size, priority, suspend)
 	{
 		pcd.handler_mode = pool;
 	}
 
-	virtual ~msc_task_t()
+	virtual ~usb_task_t()
 	{
 	}
 	;
@@ -49,7 +49,7 @@ private:
 	device_state_t prev_device_state;
 };
 
-extern msc_task_t *msc_task;
+extern usb_task_t *usb_task;
 
 #endif /*__MSC_H__*/
 

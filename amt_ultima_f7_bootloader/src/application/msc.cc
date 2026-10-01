@@ -4,10 +4,10 @@
 #include "display.h"
 
 
-msc_task_t* msc_task ;
+usb_task_t* usb_task ;
 
 
-void msc_task_t::code()
+void usb_task_t::code()
 {
   usbd_init(&pcd, &usbd, &usbd_descriptors, full_speed);
   usbd_register_class(&usbd, &msc_usbd_class);

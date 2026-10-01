@@ -1,6 +1,6 @@
+#include "tasks/usb_task.h"
 #include "gui.h"
 //#include "display/sh1106.h"
-#include "msc.h"
 #include "controls.h"
 #include "fs_browser.h"
 #include "spectrum.h"
@@ -26,7 +26,7 @@ int main(void)
 	if(usb_suspend)
 		controls.usb_vbus_irq_enable();
 
-	msc_task = new msc_task_t("MSC", 5 * configMINIMAL_STACK_SIZE, 0, usb_suspend);
+	usb_task = new usb_task_t("MSC", 5 * configMINIMAL_STACK_SIZE, 0, usb_suspend);
 	fs_browser_task = new fs_browser_task_t("FSB", 10 * configMINIMAL_STACK_SIZE, 0, !usb_suspend);
 	gui_task = new gui_task_t("GUI", 30 * configMINIMAL_STACK_SIZE, 0, 16);
 	cc_task = new cc_task_t("CC", 5 * configMINIMAL_STACK_SIZE, 0);

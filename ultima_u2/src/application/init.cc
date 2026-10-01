@@ -1,9 +1,9 @@
 #include <gate.h>
+#include "tasks/usb_task.h"
 #include "appdefs.h"
 #include "init.h"
 #include "gui.h"
 #include "fs_browser.h"
-#include "msc.h"
 #include "allFonts.h"
 #include "SN1106.h"
 #include "arm_math.h"
@@ -560,7 +560,7 @@ IRQ_HANDLER(exti9_5)
 		exti.pin9_pending_clear();
 		m_vol_fl = 1;
 		fs_browser_task->stop();
-		msc_task->start();
+		usb_task->start();
 	}
 	if(exti.pin7_pending())
 	{
