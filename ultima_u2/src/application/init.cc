@@ -1,13 +1,15 @@
-#include <gate.h>
-#include "tasks/usb_task.h"
-#include "appdefs.h"
 #include "init.h"
+
+#include "tasks/usb_task.h"
+
 #include "gui.h"
 #include "fs_browser.h"
 #include "allFonts.h"
 #include "SN1106.h"
 #include "arm_math.h"
 #include "adc.h"
+
+#include "gate.h"
 #include "distor.h"
 #include "phaser.h"
 #include "flanger.h"
@@ -543,6 +545,41 @@ void start_irq(void)
 	nvic.uart5_priority(configMAX_SYSCALL_INTERRUPT_PRIORITY + 2);
 	nvic.uart5_enable();
 }
+
+
+uint8_t tap_temp_global(void)
+{
+	uint8_t a = 0;
+	if(tap_temp < 8191)
+	{
+		tap_global = tap_temp * 16;
+		revmem_clean();
+		tap_global *= tap_tim_v[prog_data[d_tap_t]];
+		if(tap_global > 131071)
+			tap_global = 131071;
+		delay_time = tap_global / 48;
+		if(condish == start_screen && !indic_impul)
+		{
+			if(tap_fs_fl)
+			{
+				display_task->line_12x13_clean(35, 4, 54);
+				display_task->del_time_ind(35, 4, delay_time, 0);
+			}
+		}
+		else
+		{
+			if(condish == del_menu && !del_men_fl)
+				display_task->del_time_ind(60, 1, delay_time, 1);
+			else if(condish == tap_del_menu)
+				display_task->del_time_ind(60, 0, delay_time, 1);
+		}
+		a = 1;
+	}
+	tap_temp = 0;
+	return a;
+}
+
+
 IRQ_HANDLER(tim3)
 {
 	tim3.cc1_interrupt_flag_clear();

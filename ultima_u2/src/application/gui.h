@@ -473,4 +473,8 @@ inline void clean_fl(void)
 }
 extern gui_task_t *gui_task;
 
+extern uint8_t indic_impul;
+extern uint8_t del_men_fl;
+extern const float tap_tim_v[];
+
 #endif /* __GUI_H__ */

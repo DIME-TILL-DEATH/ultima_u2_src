@@ -1281,7 +1281,8 @@ void browser_init(void)
 	condish = browser_menu;
 	load_i = 0;
 }
-inline void controll_run(void)
+
+void controll_run(void)
 {
 	for(uint8_t i = 0;i < 38;i++)
 	{
@@ -6466,37 +6467,7 @@ void gui_task_t::code()
 		}
 	}
 }
-uint8_t tap_temp_global(void)
-{
-	uint8_t a = 0;
-	if(tap_temp < 8191)
-	{
-		tap_global = tap_temp * 16;
-		revmem_clean();
-		tap_global *= tap_tim_v[prog_data[d_tap_t]];
-		if(tap_global > 131071)
-			tap_global = 131071;
-		delay_time = tap_global / 48;
-		if(condish == start_screen && !indic_impul)
-		{
-			if(tap_fs_fl)
-			{
-				display_task->line_12x13_clean(35, 4, 54);
-				display_task->del_time_ind(35, 4, delay_time, 0);
-			}
-		}
-		else
-		{
-			if(condish == del_menu && !del_men_fl)
-				display_task->del_time_ind(60, 1, delay_time, 1);
-			else if(condish == tap_del_menu)
-				display_task->del_time_ind(60, 0, delay_time, 1);
-		}
-		a = 1;
-	}
-	tap_temp = 0;
-	return a;
-}
+
 void path_fold(emb_string &path)
 {
 	auto it = path.end();
@@ -6509,7 +6480,6 @@ void path_fold(emb_string &path)
 	}
 }
 
-extern volatile uint8_t tim4_upd;
 IRQ_HANDLER(tim4)
 {
 	tim4.update_interrupt_flag_clear();
