@@ -22,6 +22,7 @@
 #include "fs_browser.h"
 
 #include "gui/modulemenufactory.h"
+#include "gui/presetnamemenu.h"
 
 #include "tasks/display_task.h"
 
@@ -45,8 +46,7 @@ __attribute__((section(".itcm_data"))) uint8_t sw_temp[SWtempCount];
 
 uint8_t sys_data[64];
 
-int8_t preset_com[7] =
-{ -40, 8, 0, 0, 0, 0, 0 };
+int8_t preset_com[7] = { -40, 8, 0, 0, 0, 0, 0 };
 
 system_file_t system_file;
 
@@ -77,9 +77,9 @@ float hipas;
 float ear_vol = 1.0f;
 uint8_t par_num = 0;
 uint8_t eq_num;
-uint8_t key_shift = 0;
-volatile uint8_t nam_sym_temp;
-uint8_t num_men_temp;
+//uint8_t key_shift = 0;
+//volatile uint8_t nam_sym_temp;
+//uint8_t num_men_temp;
 int8_t filt_temp = 0;
 int8_t filt_temp_q = 0;
 emb_string str_temp;
@@ -325,7 +325,6 @@ void compress_init(void)
 {
 	condish = compresss_men;
 
-//	currentMenu = new CompressorMenu(mainMenu, gui_menu_type::MENU_COMPRESSOR, &currentPreset.module[1]);
 	currentMenu = ModuleMenuFactory::createModuleMenu(mainMenu, &currentPreset.module[1]);
 	currentMenu->show();
 
@@ -2138,8 +2137,8 @@ void gui_task_t::prog_ch(void)
 {
 	display_task->clear();
 	m_vol_fl = 1;
-	while(m_vol_fl != 2)
-		;
+	while(m_vol_fl != 2);
+
 	proc_run = 0;
 	ind_clean = 1;
 	gpiod.pin13_set();
@@ -2280,22 +2279,18 @@ void gui_task_t::code()
 	init_ext_fs();
 	preset_check();
 	prog_ch();
-	eq_num = prog_data[od_on];
-	prog_data[od_on] = 1;
-
-	//----------------------------------------
-
-	prog_data[od_on] = eq_num;
-	display_task->clear();
 	start_irq();
 	cut = 1;
-	gui_task->main_screen(0);
+
 	m_vol_fl = 0;
 	mas_v = powf(master_volume, 2.0f) * (1.0f / powf(127.0f, 2.0f));
 
 	mainMenu = new AbstractMenu();
 	currentMenu = mainMenu;
 
+	gui_task->main_screen(0);
+
+	bool exitFromMenu = false; // temporally
 	while(1)
 	{
 		update_request->take_from_task();
@@ -2304,6 +2299,38 @@ void gui_task_t::code()
 		if(foot_sw_dub_short)
 		{
 			controll_run();
+		}
+
+		if(currentMenu)
+		{
+			if(currentMenu->menuType() != gui_menu_type::MENU_ABSTRACT)
+			{
+				currentMenu->task();
+
+				if(encoder_fl1)
+				{
+					if(encoder_fl == 1)
+						currentMenu->encoderCounterClockwise();
+
+					if(encoder_fl == 2)
+						currentMenu->encoderClockwise();
+				}
+				if(encoder_but)
+					currentMenu->encoderPressed();
+
+				if(edit_but)
+				{
+					if(currentMenu->menuType() == MENU_PRESET_NAME)
+					{
+						PresetNameMenu* presetNameMenu = static_cast<PresetNameMenu*>(currentMenu);
+						if(!presetNameMenu->editMode())
+						{
+							exitFromMenu = true;
+						}
+					}
+					currentMenu->keyEditEsc();
+				}
+			}
 		}
 
 		switch(condish)
@@ -2351,21 +2378,8 @@ void gui_task_t::code()
 				prog_read();
 				if(prog == prog1)
 				{
-					//if(tap_fs_fl)
-					{
-						tap_fs_fl = 0;
-						//display_task->line_12x13(0,2,(char*)"           ",0);
-						//display_task->line_12x13_clean(0,4,127);
-						//display_task->line_12x13(45,2,(char*)"TAP",0);
-						//display_task->del_time_ind(35,4,delay_time,0);
-					}
-					//else {
-					//display_task->line_12x13(45,2,(char*)"    ",0);
-					//display_task->line_12x13_clean(0,4,127);
-					//display_task->line_12x13_clean(0,6,127);
-					//display_task->line_12x13(16,6,(char*)"IR CabSim/FX",0);
-					//display_task->icon_eff(0);
-					//}
+					tap_fs_fl = 0;
+
 					display_task->prog_indic(prog1, 1, prog_flag);
 				}
 			}
@@ -2990,19 +3004,11 @@ void gui_task_t::code()
 					break;
 				case 7:
 					condish = name_edit;
-					display_task->clear();
-					key_shift = 0;
+
+					currentMenu = new PresetNameMenu(currentMenu, imya, imya1);
+					currentMenu->show();
 					eq_num = 0;
 					par_num = 0;
-					num_men_temp = 0;
-					nam_sym_temp = 32;
-					display_task->line_5x7(2, 0, (char*) imya, 0);
-					display_task->line_5x7(2, 1, (char*) imya1, 0);
-					display_task->sym_5x7(86, 0, 46, 0);
-					display_task->sym_5x7(86, 1, 46, 0);
-					display_task->line_5x7(0, 2, (char*) ascii_low1, 0);
-					display_task->line_5x7(0, 3, (char*) ascii_low2, 0);
-					tim4_start(0);
 					break;
 				}
 				tim4_start(0);
@@ -6303,284 +6309,16 @@ void gui_task_t::code()
 			break;
 //--------------------------------------------------------------Menu Name-------------------------------------------
 		case name_edit:
-			if(par_num < 14)
-				display_task->sym_5x7(par_num * 6 + 2, 0, imya[par_num], tim4_fl * 2 - edit_fl);
-			else
-				display_task->sym_5x7((par_num - 14) * 6 + 2, 1, imya1[(par_num - 14)], tim4_fl * 2 - edit_fl);
-			if(edit_fl)
-			{
-				if(eq_num < 21)
-				{
-					if(!key_shift)
-						display_task->sym_5x7(eq_num * 6, 2, ascii_low1[eq_num], tim4_fl);
-					else
-						display_task->sym_5x7(eq_num * 6, 2, ascii_hig1[eq_num], tim4_fl);
-				}
-				else
-				{
-					if(!key_shift)
-						display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_low2[eq_num - 21], tim4_fl);
-					else
-						display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_hig2[eq_num - 21], tim4_fl);
-				}
-			}
-			if(encoder_fl1)
-			{
-				if(encoder_fl == 1)
-				{
-					if(!edit_fl)
-					{
-						if(par_num > 0)
-						{
-							if(par_num < 14)
-							{
-								display_task->sym_5x7(par_num * 6 + 2, 0, imya[par_num--], 0);
-								display_task->sym_5x7(par_num * 6 + 2, 0, imya[par_num], 2);
-							}
-							if(par_num == 14)
-							{
-								display_task->sym_5x7((par_num - 14) * 6 + 2, 1, imya1[(par_num-- - 14)], 0);
-								display_task->sym_5x7(par_num * 6 + 2, 0, imya[par_num], 2);
-							}
-							if(par_num > 14)
-							{
-								display_task->sym_5x7((par_num - 14) * 6 + 2, 1, imya1[(par_num-- - 14)], 0);
-								display_task->sym_5x7((par_num - 14) * 6 + 2, 1, imya1[(par_num - 14)], 2);
-							}
-						}
-					}
-					else
-					{
-						if(eq_num < 21)
-						{
-							if(!key_shift)
-							{
-								if(eq_num == 0)
-								{
-									display_task->sym_5x7((eq_num) * 6, 2, ascii_low1[eq_num], 0);
-									eq_num = 41;
-									display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_low2[eq_num - 21], 0);
-									nam_sym_temp = ascii_low2[eq_num - 21];
-								}
-								else
-								{
-									display_task->sym_5x7(eq_num * 6, 2, ascii_low1[eq_num--], 0);
-									display_task->sym_5x7(eq_num * 6, 2, ascii_low1[eq_num], 0);
-									nam_sym_temp = ascii_low1[eq_num];
-								}
-							}
-							else
-							{
-								if(eq_num == 0)
-								{
-									display_task->sym_5x7((eq_num) * 6, 2, ascii_hig1[eq_num], 0);
-									eq_num = 41;
-									display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_hig2[eq_num - 21], 0);
-									nam_sym_temp = ascii_hig2[eq_num - 21];
-								}
-								else
-								{
-									display_task->sym_5x7(eq_num * 6, 2, ascii_hig1[eq_num--], 0);
-									display_task->sym_5x7(eq_num * 6, 2, ascii_hig1[eq_num], 0);
-									nam_sym_temp = ascii_hig1[eq_num];
-								}
-							}
-						}
-						else
-						{
-							if(eq_num > 20)
-							{
-								if(!key_shift)
-								{
-									if(eq_num == 21)
-									{
-										display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_low2[eq_num-- - 21], 0);
-										display_task->sym_5x7(eq_num * 6, 2, ascii_low1[eq_num], 1);
-										nam_sym_temp = ascii_low1[eq_num];
-									}
-									else
-									{
-										display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_low2[eq_num-- - 21], 0);
-										display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_low2[eq_num - 21], 1);
-										nam_sym_temp = ascii_low2[eq_num - 21];
-									}
-								}
-								else
-								{
-									if(eq_num == 21)
-									{
-										display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_hig2[eq_num-- - 21], 0);
-										display_task->sym_5x7(eq_num * 6, 2, ascii_hig1[eq_num], 1);
-										nam_sym_temp = ascii_hig1[eq_num];
-									}
-									else
-									{
-										display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_hig2[eq_num-- - 21], 0);
-										display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_hig2[eq_num - 21], 0);
-										nam_sym_temp = ascii_hig2[eq_num - 21];
-									}
-								}
-							}
-						}
-					}
-				}
-				if(encoder_fl == 2)
-				{
-					if(!edit_fl)
-					{
-						if(par_num < 27)
-						{
-							if(par_num > 13)
-							{
-								display_task->sym_5x7((par_num - 14) * 6 + 2, 1, imya1[(par_num++ - 14)], 0);
-								display_task->sym_5x7((par_num - 14) * 6 + 2, 1, imya1[(par_num - 14)], 2);
-							}
-							if(par_num == 13)
-							{
-								display_task->sym_5x7(par_num * 6 + 2, 0, imya[par_num++], 0);
-								display_task->sym_5x7((par_num - 14) * 6 + 2, 1, imya1[(par_num - 14)], 2);
-							}
-							if(par_num < 13)
-							{
-								display_task->sym_5x7(par_num * 6 + 2, 0, imya[par_num++], 0);
-								display_task->sym_5x7(par_num * 6 + 2, 0, imya[par_num], 2);
-							}
-						}
-					}
-					else
-					{
-						if(eq_num < 20)
-						{
-							if(!key_shift)
-							{
-								display_task->sym_5x7(eq_num * 6, 2, ascii_low1[eq_num++], 0);
-								display_task->sym_5x7(eq_num * 6, 2, ascii_low1[eq_num], 0);
-								nam_sym_temp = ascii_low1[eq_num];
-							}
-							else
-							{
-								display_task->sym_5x7(eq_num * 6, 2, ascii_hig1[eq_num++], 0);
-								display_task->sym_5x7(eq_num * 6, 2, ascii_hig1[eq_num], 0);
-								nam_sym_temp = ascii_hig1[eq_num];
-							}
-						}
-						else
-						{
-							if(!key_shift)
-							{
-								if(eq_num == 41)
-								{
-									display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_low2[eq_num - 21], 0);
-									eq_num = 0;
-									display_task->sym_5x7(eq_num * 6, 2, ascii_low1[eq_num], 0);
-									nam_sym_temp = ascii_low1[eq_num];
-								}
-								else
-								{
-									if(eq_num == 20)
-										display_task->sym_5x7(eq_num * 6, 2, ascii_low1[eq_num++], 0);
-									else
-										display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_low2[eq_num++ - 21], 0);
-									display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_low2[eq_num - 21], 0);
-									nam_sym_temp = ascii_low2[eq_num - 21];
-								}
-							}
-							else
-							{
-								if(eq_num == 41)
-								{
-									display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_hig2[eq_num - 21], 0);
-									eq_num = 0;
-									display_task->sym_5x7(eq_num * 6, 2, ascii_hig1[eq_num], 0);
-									nam_sym_temp = ascii_hig1[eq_num];
-								}
-								else
-								{
-									if(eq_num == 20)
-										display_task->sym_5x7(eq_num * 6, 2, ascii_hig1[eq_num++], 0);
-									else
-										display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_hig2[eq_num++ - 21], 0);
-									display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_hig2[eq_num - 21], 0);
-									nam_sym_temp = ascii_hig2[eq_num - 21];
-								}
-							}
-						}
-					}
-				}
-				tim4_start(0);
-				clean_fl();
-			}
 			if(edit_but)
 			{
-				if(edit_fl)
+				if(exitFromMenu)
 				{
-					if(key_shift)
-					{
-						key_shift = 0;
-						display_task->line_5x7(0, 2, (char*) ascii_low1, 0);
-						display_task->line_5x7(0, 3, (char*) ascii_low2, 0);
-						if(eq_num < 21)
-							nam_sym_temp = ascii_low1[eq_num];
-						else
-							nam_sym_temp = ascii_low2[eq_num - 21];
-					}
-					else
-					{
-						key_shift = 1;
-						display_task->line_5x7(0, 2, (char*) ascii_hig1, 0);
-						display_task->line_5x7(0, 3, (char*) ascii_hig2, 0);
-						if(eq_num < 21)
-							nam_sym_temp = ascii_hig1[eq_num];
-						else
-							nam_sym_temp = ascii_hig2[eq_num - 21];
-					}
-				}
-				else
 					edit_init1(7);
-				tim4_start(1);
-				clean_fl();
-			}
-			if(encoder_but)
-			{
-				if(!edit_fl)
-				{
-					edit_fl = 1;
-					if(par_num < 14)
-						display_task->sym_5x7(par_num * 6 + 2, 0, imya[par_num], 1);
-					else
-						display_task->sym_5x7((par_num - 14) * 6 + 2, 1, imya1[par_num - 14], 1);
+					exitFromMenu = false;
 				}
-				else
-				{
-					edit_fl = 0;
-					if(par_num < 14)
-					{
-						imya[par_num] = nam_sym_temp;
-						display_task->sym_5x7(par_num * 6 + 2, 0, imya[par_num], 0);
-					}
-					else
-					{
-						imya1[par_num - 14] = nam_sym_temp;
-						display_task->sym_5x7((par_num - 14) * 6 + 2, 1, imya1[par_num - 14], 0);
-					}
-					if(!key_shift)
-					{
-						if(eq_num < 21)
-							display_task->sym_5x7(eq_num * 6, 2, ascii_low1[eq_num], 0);
-						else
-							display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_low2[eq_num - 21], 0);
-					}
-					else
-					{
-						if(eq_num < 21)
-							display_task->sym_5x7(eq_num * 6, 2, ascii_hig1[eq_num], 0);
-						else
-							display_task->sym_5x7((eq_num - 21) * 6, 3, ascii_hig2[eq_num - 21], 0);
-					}
-				}
-				tim4_start(0);
-				clean_fl();
 			}
+			clean_fl();
+
 			break;
 //--------------------------------------------------------------Volume---------------------------------------------
 		case volum:
@@ -6615,39 +6353,10 @@ void gui_task_t::code()
 			break;
 //------------------------------------------------------Compressor--------------
 		case compresss_men:
-			if(currentMenu)
-			{
-				if(currentMenu->menuType() != gui_menu_type::MENU_ABSTRACT)
-				{
-					currentMenu->task();
+			if(edit_but)
+				edit_init(1);
 
-					if(encoder_fl1)
-					{
-						if(encoder_fl == 1)
-						{
-							currentMenu->encoderCounterClockwise();
-//							compr.comp_par(par_num | prog_data[par_num + compr_on] << 8);
-						}
-						if(encoder_fl == 2)
-						{
-							currentMenu->encoderClockwise();
-							//compr.comp_par(par_num | prog_data[par_num + compr_on] << 8);
-						}
-					}
-					if(encoder_but)
-					{
-						currentMenu->encoderPressed();
-						//compr.comp_par(par_num | prog_data[par_num + compr_on] << 8);
-					}
-					if(edit_but)
-					{
-						currentMenu->keyEditEsc();
-						edit_init(1);
-					}
-
-					clean_fl();
-				}
-			}
+			clean_fl();
 			break;
 //---------------------------------------------------------------Metronome-----------------------
 		case metronome_menu:

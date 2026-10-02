@@ -2,35 +2,6 @@
 #include "SystemFont5x7.h"
 #include "par_bitmap.h"
 
-
-
-
-//extern const uint8_t sys[];
-//extern const uint8_t cc_of[];
-//extern const uint8_t expr_type [][12];
-//extern const uint8_t expr_menu [][10];
-//extern const uint8_t expr_on_off [][5];
-//extern const uint8_t foot_sw_type[][12];
-//extern const uint8_t footsw_menu[][12];
-//extern const uint8_t ext_switch  [][12];
-//extern const uint8_t mode_list   [][12];
-//extern const uint8_t int_sw_list [][12];
-//extern const uint8_t contr_ext_l [][12];
-//extern const uint8_t fsw_t[][12];
-//extern const uint8_t spdif_type [][12];
-//extern const uint8_t tempo_type [][10];
-//extern const uint8_t time_type [][4];
-
-//extern uint8_t vol_fl;
-//extern uint8_t vol_vol;
-//extern uint8_t inp_ind_fl;
-//extern uint8_t out_ind_fl;
-//extern uint8_t imya_temp;
-//extern uint8_t prog_cur;
-
-//extern uint8_t t_po;
-//extern volatile uint8_t t_no;
-
 extern uint8_t edit_fl;
 extern uint8_t prog_cur;
 extern uint8_t zero_buf[];
