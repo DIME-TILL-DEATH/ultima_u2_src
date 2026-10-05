@@ -11,7 +11,7 @@
 #include "tasks/display_task.h"
 
 #define FILT_PI    3.14159265358979323846f
-#define block_samples  16
+
 #define num_tab_cab 1024
 #define num_tab_amp 128
 #define eq_stage 5

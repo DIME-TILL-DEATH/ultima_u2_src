@@ -12,6 +12,8 @@
 #include "gui.h"
 #include "math.h"
 
+#include "processing/audio_process.h"
+
 #include "amp_imp.h"
 #include "filt.h"
 #include "FirststFilt.h"
@@ -325,7 +327,7 @@ void compress_init(void)
 {
 	condish = compresss_men;
 
-	currentMenu = ModuleMenuFactory::createModuleMenu(mainMenu, &currentPreset.module[1]);
+	currentMenu = ModuleMenuFactory::createModuleMenu(mainMenu, &moduleRuntime[1]);
 	currentMenu->show();
 
 	par_num = 0;
@@ -2174,7 +2176,7 @@ void gui_task_t::prog_ch(void)
 		for(uint8_t i = 0;i < 4;i++)
 			prog_data[ph_mix + i] = ph_in[i];
 	param_set();
-	for(uint8_t i = 0;i < (block_samples * 2);i++)
+	for(uint8_t i = 0;i < (AUDIO_BLOCK_SIZE * 2);i++)
 		adc_data[i].left = adc_data[i].right = dac_data[i].left = dac_data[i].right = 0;
 	gpioc.pin13_set();
 	gpioa.pin0_set();

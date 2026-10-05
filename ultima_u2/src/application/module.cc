@@ -38,8 +38,6 @@ TModuleDescriptor makeEmptyModule(TModuleType type, TModuleChannel channel, uint
 	module.channel = channel;
 	module.moduleId = moduleId;
 	module.instaceId = instanceId;
-	module.processingStage = nullptr;
-	module.needUpdateParameters = false; // after all modules work through dsp task value=true
 	module.parameterCount = 0;
 	return module;
 }

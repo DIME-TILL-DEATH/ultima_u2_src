@@ -14,8 +14,10 @@
 #include "phaser.h"
 #include "flanger.h"
 
-__attribute__((section(".dtcm_data"))) ad_data_t adc_data[block_samples * 2];
-__attribute__((section(".dtcm_data"))) da_data_t dac_data[block_samples * 2];
+#include "processing/audio_process.h"
+
+__attribute__((section(".dtcm_data"))) ad_data_t adc_data[AUDIO_BLOCK_SIZE * 2];
+__attribute__((section(".dtcm_data"))) da_data_t dac_data[AUDIO_BLOCK_SIZE * 2];
 __attribute__((section(".itcm_data"))) float phas[14];
 __attribute__((section(".itcm_data"))) float memflan[2048];
 
@@ -51,9 +53,9 @@ arm_biquad_casd_df1_inst_f32 eq_instance;
 arm_biquad_casd_df1_inst_f32 presen_instance;
 arm_biquad_casd_df1_inst_f32 preamp_instance;
 float coef_cab[num_tab_cab];
-float state_cab[num_tab_cab + block_samples - 1];
+float state_cab[num_tab_cab + AUDIO_BLOCK_SIZE - 1];
 float coef_amp[num_tab_amp];
-float state_amp[num_tab_amp + block_samples - 1];
+float state_amp[num_tab_amp + AUDIO_BLOCK_SIZE - 1];
 float coeff_eq[eq_stage * 5];
 float stage_eq[eq_stage * 4];
 float coeff_presen[presen_stage * 5];
@@ -99,8 +101,8 @@ const uint8_t exp_init[4] =
 void init(void)
 {
 
-	arm_fir_init_f32(&cab_inst, num_tab_cab, coef_cab, state_cab, block_samples);
-	arm_fir_init_f32(&amp_inst, num_tab_amp, coef_amp, state_amp, block_samples);
+	arm_fir_init_f32(&cab_inst, num_tab_cab, coef_cab, state_cab, AUDIO_BLOCK_SIZE);
+	arm_fir_init_f32(&amp_inst, num_tab_amp, coef_amp, state_amp, AUDIO_BLOCK_SIZE);
 	arm_biquad_cascade_df1_init_f32(&eq_instance, eq_stage, coeff_eq, stage_eq);
 	arm_biquad_cascade_df1_init_f32(&presen_instance, presen_stage, coeff_presen, stage_presen);
 	arm_biquad_cascade_df1_init_f32(&preamp_instance, preamp_stage, coeff_preamp, stage_preamp);
@@ -301,7 +303,7 @@ void init(void)
 	dma2.clock_enable();
 
 	dma2_stream5.channel_sai1_b();
-	dma2_stream5.number_of_data = block_samples * 4;
+	dma2_stream5.number_of_data = AUDIO_BLOCK_SIZE * 4;
 	dma2_stream5.peripheral_address = ((uint32_t) &sai1.block_b.data);
 	dma2_stream5.memory0_address = ((uint32_t) adc_data);
 	dma2_stream5.direction_peripheral_to_memory();
@@ -318,7 +320,7 @@ void init(void)
 	nvic.dma2_stream5_enable();
 
 	dma2_stream1.channel_sai1_a();
-	dma2_stream1.number_of_data = block_samples * 4;
+	dma2_stream1.number_of_data = AUDIO_BLOCK_SIZE * 4;
 	dma2_stream1.peripheral_address = ((uint32_t) &sai1.block_a.data);
 	dma2_stream1.memory0_address = ((uint32_t) dac_data);
 	dma2_stream1.direction_memory_to_peripheral();

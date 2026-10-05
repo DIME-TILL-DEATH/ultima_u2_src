@@ -37,7 +37,7 @@ public:
 	}
 
 	void comp_par(uint32_t val);
-	void updateParams() override;
+	void updateParams(const TModuleDescriptor* module) override;
 
 private:
 

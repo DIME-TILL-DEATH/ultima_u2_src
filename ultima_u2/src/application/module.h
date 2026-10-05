@@ -2,7 +2,7 @@
 #define _MODULE_H_
 
 #include "processing/param_descriptor.h"
-#include "processing/abstractstage.h"
+//#include "processing/abstractstage.h"
 
 enum TModuleType
 {
@@ -39,8 +39,8 @@ typedef struct
 	uint8_t moduleId;	// number of module in the preset, for example: 0 - first module, 1 - second module, etc.
 	uint8_t instaceId;	// number of module type instance in the preset
 
-	bool needUpdateParameters;
-	AbstractStage *processingStage;
+//	bool needUpdateParameters;
+//	AbstractStage *processingStage;
 } TModuleDescriptor;
 
 TModuleDescriptor makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t moduleId, uint8_t instanceId);

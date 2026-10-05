@@ -1,3 +1,5 @@
+#include "audio_process.h"
+
 #include "init.h"
 #include "gui.h"
 #include "filt.h"
@@ -18,6 +20,8 @@
 #include "tasks/display_task.h"
 #include "tasks/dsp_task.h"
 
+TModuleRuntime moduleRuntime[MAX_PRESET_MODULES];
+
 Gate gate_pres;
 Gate gate_glob;
 Expander expan;
@@ -37,21 +41,21 @@ uint16_t rev_pre = 0;
 uint16_t rev_pre_po = 0;
 uint8_t proc_run = 1;
 
-int32_t ccl[block_samples];
-int32_t ccr[block_samples];
-float out_eq_preamp[block_samples];
+int32_t ccl[AUDIO_BLOCK_SIZE];
+int32_t ccr[AUDIO_BLOCK_SIZE];
+float out_eq_preamp[AUDIO_BLOCK_SIZE];
 uint8_t eq_preamp_fl;
-float out_fir_amp[block_samples];
+float out_fir_amp[AUDIO_BLOCK_SIZE];
 uint8_t fir_amp_fl;
-float out_eq[block_samples];
-float out_od[block_samples];
+float out_eq[AUDIO_BLOCK_SIZE];
+float out_od[AUDIO_BLOCK_SIZE];
 uint8_t eq_fl;
-float inp_sampleL[block_samples];
-float inp_sampleR[block_samples];
-float out_sample[block_samples];
-float gat_pres[block_samples];
-float gat_glob[block_samples];
-float exp_buf[block_samples];
+float inp_sampleL[AUDIO_BLOCK_SIZE];
+float inp_sampleR[AUDIO_BLOCK_SIZE];
+float out_sample[AUDIO_BLOCK_SIZE];
+float gat_pres[AUDIO_BLOCK_SIZE];
+float gat_glob[AUDIO_BLOCK_SIZE];
+float exp_buf[AUDIO_BLOCK_SIZE];
 
 extern arm_biquad_casd_df1_inst_f32 eq_instance;
 extern arm_biquad_casd_df1_inst_f32 presen_instance;
@@ -80,7 +84,7 @@ float mas_v = 0.0f;
 float rev_fb;
 float rev_fb_val;
 float rev_nopr;
-float c3[block_samples];
+float c3[AUDIO_BLOCK_SIZE];
 float pr_ga = 1;
 
 extern uint32_t ind_in_p[];
@@ -187,9 +191,9 @@ IRQ_HANDLER(dma2_stream5)
 		dsp_task->trigger();
 
 //-----------------------------------------------------convert ADC to float----------------------------------
-	for(uint8_t i = 0;i < block_samples;i++)
+	for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 	{
-		uint8_t a = i + dma_ht_fl * block_samples;
+		uint8_t a = i + dma_ht_fl * AUDIO_BLOCK_SIZE;
 		ccl[i] = adc_data[a].left;
 		ccl[i] = ccl[i] >> 8;
 		ccr[i] = adc_data[a].right;
@@ -222,7 +226,8 @@ IRQ_HANDLER(dma2_stream5)
 		gat_pres[i] = gate_pres.gate_out(inp_sampleR[i]);
 		gat_glob[i] = gate_glob.gate_out(inp_sampleR[i]);
 
-		if(prog_data[compr_on])
+//		if(prog_data[compr_on])
+		if(moduleRuntime[1].descriptor->parameter[0].value)
 			inp_sampleL[i] = compr.compr(inp_sampleL[i]);
 
 		c3[i] = inp_sampleL[i];
@@ -244,72 +249,72 @@ IRQ_HANDLER(dma2_stream5)
 //------------------------------------------------------Scrimer tone & volume---------------------------------
 		if(prog_data[od_on])
 		{
-			for(uint8_t i = 0;i < block_samples;i++)
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 				out_od[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl + prog_data[preamp_on] - 1])
 						* od_volume;
-			arm_biquad_cascade_df1_f32(&preamp_instance, out_od, inp_sampleL, block_samples);
+			arm_biquad_cascade_df1_f32(&preamp_instance, out_od, inp_sampleL, AUDIO_BLOCK_SIZE);
 		}
 //------------------------------------------------------eq pre------------------------------------------------
 		if(!prog_data[eq_po])
 		{
-			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, block_samples);
+			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, AUDIO_BLOCK_SIZE);
 			if(prog_data[eq_on])
-				arm_copy_f32(out_eq, inp_sampleL, block_samples);
+				arm_copy_f32(out_eq, inp_sampleL, AUDIO_BLOCK_SIZE);
 		}
 //------------------------------------------------------fender pre------------------------------------------------
 		if(prog_data[preamp_on] && !prog_data[od_on])
 		{
-			for(uint8_t i = 0;i < block_samples;i++)
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 				out_eq_preamp[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl]) * pream_vol;
-			arm_biquad_cascade_df1_f32(&preamp_instance, out_eq_preamp, inp_sampleL, block_samples);
+			arm_biquad_cascade_df1_f32(&preamp_instance, out_eq_preamp, inp_sampleL, AUDIO_BLOCK_SIZE);
 		}
 //------------------------------------------------------amplifier----------------------------------------------
 		if(prog_data[amp_on])
 		{
-			for(uint8_t i = 0;i < block_samples;i++)
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 				inp_sampleL[i] = soft_clip_amp(inp_sampleL[i] * amp_vol) * amp_sla;
 			if(prog_data[a_t])
 			{
-				arm_fir_f32(&amp_inst, inp_sampleL, out_fir_amp, block_samples);
-				for(uint8_t i = 0;i < block_samples;i++)
+				arm_fir_f32(&amp_inst, inp_sampleL, out_fir_amp, AUDIO_BLOCK_SIZE);
+				for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 					inp_sampleL[i] = out_fir_amp[i] * 0.6f;
 			}
 		}
 //------------------------------------------------------HPF----------------------------------------------
 		if(prog_data[hip_on])
-			for(uint8_t i = 0;i < block_samples;i++)
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 				inp_sampleL[i] = hpFilt.filt(inp_sampleL[i], prog_data[hip_on]);
 //------------------------------------------------------EQ-----------------------------------------------
 		if(prog_data[eq_po])
 		{
-			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, block_samples);
+			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, AUDIO_BLOCK_SIZE);
 			if(prog_data[eq_on])
-				arm_copy_f32(out_eq, inp_sampleL, block_samples);
+				arm_copy_f32(out_eq, inp_sampleL, AUDIO_BLOCK_SIZE);
 		}
 //-----------------------------------------------------LPF-----------------------------------------------
 		if(prog_data[lop_on])
-			for(uint8_t i = 0;i < block_samples;i++)
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 				inp_sampleL[i] = lpFilt.filt(inp_sampleL[i], prog_data[lop_on]);
 //-----------------------------------------------------Presence-------------------------------------------
-		arm_biquad_cascade_df1_f32(&presen_instance, inp_sampleL, out_sample, block_samples);
+		arm_biquad_cascade_df1_f32(&presen_instance, inp_sampleL, out_sample, AUDIO_BLOCK_SIZE);
 		if(prog_data[pr_on] || prog_data[amp_on])
-			arm_copy_f32(out_sample, inp_sampleL, block_samples);
+			arm_copy_f32(out_sample, inp_sampleL, AUDIO_BLOCK_SIZE);
 //-----------------------------------------------------Phas Flang------------------------------------
 		if(prog_data[phaz_on] == 2)
-			for(uint8_t i = 0;i < block_samples;i++)
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 				inp_sampleL[i] = phaser.phaser(inp_sampleL[i]);
 		if(prog_data[flan_on] == 2)
-			for(uint8_t i = 0;i < block_samples;i++)
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 				flanger.flanger(inp_sampleL + i);
 //------------------------------------------------------End-------------------------------------------------------
 		if(prog_data[cab_on] && impulse_flag && !system_file.glob_cab)
 		{
 			inp_sampleR[0] = prog_data[ir_mix] * 0.0079365079365079f;
-			arm_fir_f32(&cab_inst, inp_sampleL, out_eq, block_samples);
-			for(uint8_t i = 0;i < block_samples;i++)
+			arm_fir_f32(&cab_inst, inp_sampleL, out_eq, AUDIO_BLOCK_SIZE);
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 				inp_sampleL[i] = inp_sampleL[i] * inp_sampleR[0] + out_eq[i] * 0.3f * cab_volume * (1.0f - inp_sampleR[0]);
 		}
-		for(uint8_t i = 0;i < block_samples;i++)
+		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 		{
 			if(prog_data[ga_on])
 				inp_sampleL[i] *= gat_pres[i];
@@ -414,9 +419,9 @@ IRQ_HANDLER(dma2_stream5)
 		}
 	}
 
-	for(uint8_t i = 0;i < block_samples;i++)
+	for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
 	{
-		uint8_t a = i + dma_ht_fl * block_samples; //pointer
+		uint8_t a = i + dma_ht_fl * AUDIO_BLOCK_SIZE; //pointer
 		ccl[i] = out_clip(inp_sampleL[i]) * 8388607.0f * mute_mas * p_vol * mas_v;
 		ccr[i] = out_clip(inp_sampleR[i]) * 8388607.0f * mute_mas * p_vol * mas_v;
 		ccl[i] = ccl[i] << 8;

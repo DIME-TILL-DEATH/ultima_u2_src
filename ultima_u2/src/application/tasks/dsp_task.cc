@@ -3,6 +3,8 @@
 #include "init.h"
 #include "preset.h"
 
+#include "processing/audio_process.h"
+
 dsp_task_t *dsp_task;
 
 
@@ -15,10 +17,10 @@ void dsp_task_t::code()
 
 		for(int i=0; i<currentPreset.moduleCount; i++)
 		{
-			if(currentPreset.module[i].needUpdateParameters && currentPreset.module[i].processingStage != nullptr)
+			if(moduleRuntime[i].dirty && moduleRuntime[i].stage != nullptr)
 			{
-				currentPreset.module[i].processingStage->updateParams();
-				currentPreset.module[i].needUpdateParameters = false;
+				moduleRuntime[i].stage->updateParams(moduleRuntime[i].descriptor);
+				moduleRuntime[i].dirty = false;
 			}
 		}
 	}

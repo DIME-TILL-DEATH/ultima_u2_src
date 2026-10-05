@@ -19,8 +19,10 @@ void Compressor::comp_par(uint32_t val)
 	outlevel = (dB2rap((float)toutput) * makeuplin) * 0.01f;
 }
 
-void Compressor::updateParams()
+void Compressor::updateParams(const TModuleDescriptor* module)
 {
-	for(uint8_t i = 1;i < 6;i++)
-		comp_par(i | (currentPreset.module[1].parameter[i].value << 8));
+	if(module == nullptr) return;
+
+	for(uint8_t i = 1; i < 6; i++)
+		comp_par(i | (module->parameter[i].value << 8));
 }

@@ -3,13 +3,15 @@
 
 #include "appdefs.h"
 
+#include "module.h"
+
 class AbstractStage{
 
 public:
 	AbstractStage() {};
 	virtual ~AbstractStage() {};
 
-	virtual void updateParams() {};
+	virtual void updateParams(const TModuleDescriptor* module) {};
 	virtual void process(float* inL, float* inR, float* outL, float* outR);
 
 	static constexpr uint8_t blockSize = 32;
