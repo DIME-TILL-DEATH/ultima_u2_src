@@ -47,21 +47,21 @@ uint8_t ext_fsw_b1 = 0;
 uint8_t ext_fsw_b2 = 0;
 uint8_t start_fl = 0;
 
-arm_fir_instance_f32 cab_inst;
-arm_fir_instance_f32 amp_inst;
-arm_biquad_casd_df1_inst_f32 eq_instance;
-arm_biquad_casd_df1_inst_f32 presen_instance;
-arm_biquad_casd_df1_inst_f32 preamp_instance;
-float coef_cab[num_tab_cab];
-float state_cab[num_tab_cab + AUDIO_BLOCK_SIZE - 1];
-float coef_amp[num_tab_amp];
-float state_amp[num_tab_amp + AUDIO_BLOCK_SIZE - 1];
-float coeff_eq[eq_stage * 5];
-float stage_eq[eq_stage * 4];
-float coeff_presen[presen_stage * 5];
-float stage_presen[presen_stage * 4];
-float coeff_preamp[preamp_stage * 5];
-float stage_preamp[preamp_stage * 4];
+//arm_fir_instance_f32 cab_inst;
+//arm_fir_instance_f32 amp_inst;
+//arm_biquad_casd_df1_inst_f32 eq_instance;
+//arm_biquad_casd_df1_inst_f32 presen_instance;
+//arm_biquad_casd_df1_inst_f32 preamp_instance;
+//float coef_cab[num_tab_cab];
+//float state_cab[num_tab_cab + AUDIO_BLOCK_SIZE - 1];
+//float coef_amp[num_tab_amp];
+//float state_amp[num_tab_amp + AUDIO_BLOCK_SIZE - 1];
+//float coeff_eq[eq_stage * 5];
+//float stage_eq[eq_stage * 4];
+//float coeff_presen[presen_stage * 5];
+//float stage_presen[presen_stage * 4];
+//float coeff_preamp[preamp_stage * 5];
+//float stage_preamp[preamp_stage * 4];
 
 void init_ext_fs(void)
 {
@@ -101,11 +101,11 @@ const uint8_t exp_init[4] =
 void init(void)
 {
 
-	arm_fir_init_f32(&cab_inst, num_tab_cab, coef_cab, state_cab, AUDIO_BLOCK_SIZE);
-	arm_fir_init_f32(&amp_inst, num_tab_amp, coef_amp, state_amp, AUDIO_BLOCK_SIZE);
-	arm_biquad_cascade_df1_init_f32(&eq_instance, eq_stage, coeff_eq, stage_eq);
-	arm_biquad_cascade_df1_init_f32(&presen_instance, presen_stage, coeff_presen, stage_presen);
-	arm_biquad_cascade_df1_init_f32(&preamp_instance, preamp_stage, coeff_preamp, stage_preamp);
+//	arm_fir_init_f32(&cab_inst, num_tab_cab, coef_cab, state_cab, AUDIO_BLOCK_SIZE);
+//	arm_fir_init_f32(&amp_inst, num_tab_amp, coef_amp, state_amp, AUDIO_BLOCK_SIZE);
+//	arm_biquad_cascade_df1_init_f32(&eq_instance, eq_stage, coeff_eq, stage_eq);
+//	arm_biquad_cascade_df1_init_f32(&presen_instance, presen_stage, coeff_presen, stage_presen);
+//	arm_biquad_cascade_df1_init_f32(&preamp_instance, preamp_stage, coeff_preamp, stage_preamp);
 //-----------------------------------------------config pins SAI1-----------------------
 	gpioe.clock_enable();
 	gpioe.pin2_mode_alternate_function();

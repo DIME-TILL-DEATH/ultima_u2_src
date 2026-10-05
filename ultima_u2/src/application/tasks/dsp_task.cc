@@ -11,6 +11,8 @@ dsp_task_t *dsp_task;
 //------------------------------------------------------------------------------
 void dsp_task_t::code()
 {
+	audioProcessInit();
+
 	while(1)
 	{
 		block_request->take_from_task();
@@ -23,6 +25,8 @@ void dsp_task_t::code()
 				moduleRuntime[i].dirty = false;
 			}
 		}
+
+		audioProcessBlock();
 	}
 }
 //------------------------------------------------------------------------------

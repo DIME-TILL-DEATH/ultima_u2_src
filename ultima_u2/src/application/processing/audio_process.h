@@ -16,6 +16,11 @@ struct TModuleRuntime
     bool dirty = false;
 };
 
+void audioProcessInit();
+void audioCaptureBlock();
+void audioProcessBlock();
+
+
 extern TModuleRuntime moduleRuntime[MAX_PRESET_MODULES];
 
 #endif /* AUDIO_PROCESS_H_ */
