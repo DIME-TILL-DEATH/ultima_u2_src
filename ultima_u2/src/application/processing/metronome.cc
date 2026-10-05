@@ -1,4 +1,77 @@
-#include "appdefs.h"
+#include "metronome.h"
+
+#include "audio_process.h"
+#include "init.h"
+
+Metronome metronome;
+TModuleDescriptor metronomeModuleDescriptor;
+
+Metronome::Metronome()
+{
+	metronom_start = 0;
+	metronom_fl = 0;
+	metronom_vol = 64;
+
+	metronomeModuleDescriptor.type = METRONOME_MODULE;
+	metronomeModuleDescriptor.channel = STEREO_CHANNEL;
+	metronomeModuleDescriptor.parameterCount = 3;
+
+	metronomeModuleDescriptor.parameter[0].name = "Metronome";
+	metronomeModuleDescriptor.parameter[0].value = 0;
+	metronomeModuleDescriptor.parameter[0].min = 0;
+	metronomeModuleDescriptor.parameter[0].max = 1;
+
+	metronomeModuleDescriptor.parameter[1].name = "Tempo";
+	metronomeModuleDescriptor.parameter[1].value = 120;
+	metronomeModuleDescriptor.parameter[1].min = 20;
+	metronomeModuleDescriptor.parameter[1].max = 240;
+
+	metronomeModuleDescriptor.parameter[2].name = "Volume";
+	metronomeModuleDescriptor.parameter[2].value = metronom_vol;
+	metronomeModuleDescriptor.parameter[2].min = 0;
+	metronomeModuleDescriptor.parameter[2].max = 127;
+
+}
+
+void Metronome::process(float* sampleL, float* sampleR)
+{
+	for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+	{
+		if(metronom_start)
+		{
+			if(metronom_fl)
+			{
+				int32_t ccl = metronom_cod[metronom_counter] << 16;
+				float in_l = ccl >> 8;
+				in_l = in_l * ((metronom_vol * metronom_vol) * pow_temp) * 0.000000119f;
+				sampleL[i] += in_l;
+				sampleR[i] += in_l;
+
+				metronom_counter++;
+				if(metronom_counter == 3935)
+				{
+					metronom_fl = 0;
+					metronom_counter = 0;
+				}
+			}
+
+			if(!temp_counter++)
+				metronom_fl = 1;
+			else
+			{
+				if(temp_counter == metronom_int)
+					temp_counter = 0;
+			}
+		}
+	}
+}
+
+void Metronome::updateParams(const TModuleDescriptor* module)
+{
+	metronom_start = module->parameter[0].value;
+	metronom_int = 48000.0f / (module->parameter[1].value / 60.0f) + 0.5f;
+	metronom_vol = module->parameter[2].value;
+}
 
 const uint16_t metronom_cod[3935] =
 { 0xfc5b, 0xeb66, 0xda4b, 0xd6de, 0xe3fa, 0x0055, 0x257d, 0x4542, 0x59fd, 0x6628, 0x6454, 0x4c3d, 0x1c48, 0xdf85, 0xb4c3, 0xb2b7, 0xc624, 0xce33, 0xc59e,

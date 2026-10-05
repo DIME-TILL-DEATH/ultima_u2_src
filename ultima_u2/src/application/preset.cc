@@ -2,3 +2,5 @@
 
 //__attribute__((section(".dtcm_data"))) TPreset currentPreset;
 TPreset currentPreset;
+TModuleDescriptor metronomeModule;
+TModuleRuntime metronomeRuntime;

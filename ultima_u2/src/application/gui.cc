@@ -25,6 +25,7 @@
 
 #include "gui/modulemenufactory.h"
 #include "gui/presetnamemenu.h"
+#include "gui/metronomemenu.h"
 
 #include "tasks/display_task.h"
 
@@ -635,23 +636,9 @@ void sys_init(uint8_t num)
 }
 void metronome_init(void)
 {
-	display_task->clear();
-	for(uint8_t i = 0;i < 3;i++)
-	{
-		display_task->line_5x7(0, i, (char*) menu_list3 + i * 10, 0);
-		switch(i)
-		{
-		case 0:
-			display_task->line_5x7(63, i, (char*) on_off + metronom_start * 4, 0);
-			break;
-		case 1:
-			display_task->num_5x7(63, 1, tempo, 0);
-			break;
-		case 2:
-			display_task->par_indic(60, 2, metronom_vol);
-			break;
-		}
-	}
+	currentMenu = ModuleMenuFactory::createModuleMenu(mainMenu, &metronomeRuntime);
+	currentMenu->show();
+
 	edit_fl = 0;
 	condish = metronome_menu;
 	par_num = 0;
@@ -6363,107 +6350,108 @@ void gui_task_t::code()
 			break;
 //---------------------------------------------------------------Metronome-----------------------
 		case metronome_menu:
-			if(!tim4_fl)
-			{
-				if(!edit_fl)
-					display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num * 10, 2);
-			}
-			else
-			{
-				if(!edit_fl)
-					display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num * 10, 0);
-			}
-			if(encoder_fl1)
-			{
-				if(encoder_fl == 1)
-				{
-					if(!edit_fl)
-					{
-						if(par_num)
-							display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num-- * 10, 0);
-					}
-					else
-					{
-						if(par_num == 1)
-						{
-							if(tempo > 20)
-							{
-								tempo = enc_speed_dec(tempo, 20);
-								metronom_int = 48000.0f / (tempo / 60.0f) + 0.5f;
-								display_task->num_5x7(64, 1, tempo, 0);
-							}
-						}
-						else
-						{
-							if(metronom_vol)
-							{
-								metronom_vol = enc_speed_dec(metronom_vol, 0);
-								display_task->par_indic(60, 2, metronom_vol);
-							}
-						}
-					}
-				}
-				if(encoder_fl == 2)
-				{
-					if(!edit_fl)
-					{
-						if(par_num < 2)
-							display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num++ * 10, 0);
-					}
-					else
-					{
-						if(par_num == 1)
-						{
-							if(tempo < 240)
-							{
-								tempo = enc_speed_inc(tempo, 240);
-								metronom_int = 48000.0f / (tempo / 60.0f) + 0.5f;
-								display_task->num_5x7(64, 1, tempo, 0);
-							}
-						}
-						else
-						{
-							if(metronom_vol < 127)
-							{
-								metronom_vol = enc_speed_inc(metronom_vol, 127);
-								display_task->par_indic(60, 2, metronom_vol);
-							}
-						}
-					}
-				}
-				tim4_start(1);
-			}
-			if(encoder_but)
-			{
-				if(!par_num)
-				{
-					if(!metronom_start)
-					{
-						metronom_int = 48000.0f / (tempo / 60.0f) + 0.5f;
-						metronom_counter = temp_counter = 0;
-						metronom_start = 1;
-						display_task->line_5x7(63, 0, (char*) on_off + metronom_start * 4, 0);
-					}
-					else
-					{
-						metronom_start = 0;
-						display_task->line_5x7(63, 0, (char*) on_off + metronom_start * 4, 0);
-					}
-				}
-				else
-				{
-					if(!edit_fl)
-					{
-						edit_fl = 1;
-						display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num * 10, 2);
-					}
-					else
-						edit_fl = 0;
-					tim4_start(1);
-				}
-			}
+//			if(!tim4_fl)
+//			{
+//				if(!edit_fl)
+//					display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num * 10, 2);
+//			}
+//			else
+//			{
+//				if(!edit_fl)
+//					display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num * 10, 0);
+//			}
+//			if(encoder_fl1)
+//			{
+//				if(encoder_fl == 1)
+//				{
+//					if(!edit_fl)
+//					{
+//						if(par_num)
+//							display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num-- * 10, 0);
+//					}
+//					else
+//					{
+//						if(par_num == 1)
+//						{
+//							if(tempo > 20)
+//							{
+//								tempo = enc_speed_dec(tempo, 20);
+//								metronom_int = 48000.0f / (tempo / 60.0f) + 0.5f;
+//								display_task->num_5x7(64, 1, tempo, 0);
+//							}
+//						}
+//						else
+//						{
+//							if(metronom_vol)
+//							{
+//								metronom_vol = enc_speed_dec(metronom_vol, 0);
+//								display_task->par_indic(60, 2, metronom_vol);
+//							}
+//						}
+//					}
+//				}
+//				if(encoder_fl == 2)
+//				{
+//					if(!edit_fl)
+//					{
+//						if(par_num < 2)
+//							display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num++ * 10, 0);
+//					}
+//					else
+//					{
+//						if(par_num == 1)
+//						{
+//							if(tempo < 240)
+//							{
+//								tempo = enc_speed_inc(tempo, 240);
+//								metronom_int = 48000.0f / (tempo / 60.0f) + 0.5f;
+//								display_task->num_5x7(64, 1, tempo, 0);
+//							}
+//						}
+//						else
+//						{
+//							if(metronom_vol < 127)
+//							{
+//								metronom_vol = enc_speed_inc(metronom_vol, 127);
+//								display_task->par_indic(60, 2, metronom_vol);
+//							}
+//						}
+//					}
+//				}
+//				tim4_start(1);
+//			}
+//			if(encoder_but)
+//			{
+//				if(!par_num)
+//				{
+//					if(!metronom_start)
+//					{
+//						metronom_int = 48000.0f / (tempo / 60.0f) + 0.5f;
+//						metronom_counter = temp_counter = 0;
+//						metronom_start = 1;
+//						display_task->line_5x7(63, 0, (char*) on_off + metronom_start * 4, 0);
+//					}
+//					else
+//					{
+//						metronom_start = 0;
+//						display_task->line_5x7(63, 0, (char*) on_off + metronom_start * 4, 0);
+//					}
+//				}
+//				else
+//				{
+//					if(!edit_fl)
+//					{
+//						edit_fl = 1;
+//						display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num * 10, 2);
+//					}
+//					else
+//						edit_fl = 0;
+//					tim4_start(1);
+//				}
+//			}
 			if(edit_but)
 				sys_init(6);
+
 			clean_fl();
 			break;
 		}

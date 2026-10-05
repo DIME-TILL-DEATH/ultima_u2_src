@@ -12,7 +12,7 @@ public:
 	virtual ~AbstractStage() {};
 
 	virtual void updateParams(const TModuleDescriptor* module) {};
-	virtual void process(float* inL, float* inR, float* outL, float* outR);
+	virtual void process(float* sampleL, float* sampleR) {};
 
 	static constexpr uint8_t blockSize = 32;
 };

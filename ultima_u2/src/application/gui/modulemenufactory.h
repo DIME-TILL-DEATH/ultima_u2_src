@@ -12,6 +12,7 @@ public:
 private:
 
 	static AbstractMenu* createCompressorMenu(AbstractMenu* parent, TModuleRuntime* module);
+	static AbstractMenu* createMetronomeMenu(AbstractMenu* parent, TModuleRuntime* module);
 };
 
 #endif /* MODULEMENUFACTORY_H_ */

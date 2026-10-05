@@ -10,9 +10,7 @@ typedef struct
 	int16_t value;
 	int16_t min;
 	int16_t max;
-//	const char* handlerStr;
 	const char* name;
-//	setter_handler_t setterHandler;
 }TParamDescriptor;
 
 

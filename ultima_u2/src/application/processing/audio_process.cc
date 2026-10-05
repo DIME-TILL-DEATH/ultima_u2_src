@@ -5,7 +5,7 @@
 #include "filt.h"
 #include "arm_math.h"
 #include "vdt/vdt.h"
-#include "metronom.h"
+#include "metronome.h"
 #include "spectrum.h"
 
 #include "gate.h"
@@ -59,6 +59,8 @@ float c3[AUDIO_BLOCK_SIZE];
 #define c3 audio_state.c3
 
 TModuleRuntime moduleRuntime[MAX_PRESET_MODULES];
+
+//MetronomeStage metronome;
 
 Gate gate_pres;
 Gate gate_glob;
@@ -121,12 +123,6 @@ uint32_t tap_temp1;
 uint32_t tap_temp2;
 uint32_t del_tim_ind;
 
-uint32_t metronom_start = 0;
-uint8_t metronom_fl = 0;
-uint16_t metronom_counter;
-uint16_t temp_counter;
-uint32_t metronom_int;
-uint8_t metronom_vol = 64;
 uint8_t tuner_use = 0;
 uint8_t gate_fl = 0;
 
@@ -242,169 +238,175 @@ IRQ_HANDLER(dma2_stream5)
 //------------------------------------------------------------------------------
 void audioProcessBlock()
 {
-	if(!proc_run)
-		return;
-
-	if(prog_data[od_on])
+	if(proc_run)
 	{
 		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-			out_od[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl + prog_data[preamp_on] - 1])
-					* od_volume;
-		arm_biquad_cascade_df1_f32(&preamp_instance, out_od, inp_sampleL, AUDIO_BLOCK_SIZE);
-	}
-	if(!prog_data[eq_po])
-	{
-		arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, AUDIO_BLOCK_SIZE);
-		if(prog_data[eq_on])
-			arm_copy_f32(out_eq, inp_sampleL, AUDIO_BLOCK_SIZE);
-	}
-	if(prog_data[preamp_on] && !prog_data[od_on])
-	{
-		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-			out_eq_preamp[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl]) * pream_vol;
-		arm_biquad_cascade_df1_f32(&preamp_instance, out_eq_preamp, inp_sampleL, AUDIO_BLOCK_SIZE);
-	}
-	if(prog_data[amp_on])
-	{
-		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-			inp_sampleL[i] = soft_clip_amp(inp_sampleL[i] * amp_vol) * amp_sla;
-		if(prog_data[a_t])
 		{
-			arm_fir_f32(&amp_inst, inp_sampleL, out_fir_amp, AUDIO_BLOCK_SIZE);
+			inp_sampleR[i] = gate_pres.dc_block(inp_sampleR[i]);
+			gat_pres[i] = gate_pres.gate_out(inp_sampleR[i]);
+			gat_glob[i] = gate_glob.gate_out(inp_sampleR[i]);
+
+			if(moduleRuntime[1].descriptor != nullptr && moduleRuntime[1].descriptor->parameter[0].value)
+				inp_sampleL[i] = compr.compr(inp_sampleL[i]);
+
+			c3[i] = inp_sampleL[i];
+			if(tuner_use)
+			{
+				if(fabsf(c3[i]) < 0.0005f)
+					c3[i] = 0.0f;
+				SpectrumBuffsUpdate(c3[i]);
+			}
+
+			if(prog_data[phaz_on] == 1)
+				inp_sampleL[i] = phaser.phaser(inp_sampleL[i]);
+			if(prog_data[flan_on] == 1)
+				flanger.flanger(inp_sampleL + i);
+		}
+
+
+
+		if(prog_data[od_on])
+		{
 			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-				inp_sampleL[i] = out_fir_amp[i] * 0.6f;
+				out_od[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl + prog_data[preamp_on] - 1])
+						* od_volume;
+			arm_biquad_cascade_df1_f32(&preamp_instance, out_od, inp_sampleL, AUDIO_BLOCK_SIZE);
 		}
-	}
-	if(prog_data[hip_on])
-		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-			inp_sampleL[i] = hpFilt.filt(inp_sampleL[i], prog_data[hip_on]);
-	if(prog_data[eq_po])
-	{
-		arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, AUDIO_BLOCK_SIZE);
-		if(prog_data[eq_on])
-			arm_copy_f32(out_eq, inp_sampleL, AUDIO_BLOCK_SIZE);
-	}
-	if(prog_data[lop_on])
-		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-			inp_sampleL[i] = lpFilt.filt(inp_sampleL[i], prog_data[lop_on]);
-	arm_biquad_cascade_df1_f32(&presen_instance, inp_sampleL, out_sample, AUDIO_BLOCK_SIZE);
-	if(prog_data[pr_on] || prog_data[amp_on])
-		arm_copy_f32(out_sample, inp_sampleL, AUDIO_BLOCK_SIZE);
-	if(prog_data[phaz_on] == 2)
-		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-			inp_sampleL[i] = phaser.phaser(inp_sampleL[i]);
-	if(prog_data[flan_on] == 2)
-		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-			flanger.flanger(inp_sampleL + i);
-	if(prog_data[cab_on] && impulse_flag && !system_file.glob_cab)
-	{
-		inp_sampleR[0] = prog_data[ir_mix] * 0.0079365079365079f;
-		arm_fir_f32(&cab_inst, inp_sampleL, out_eq, AUDIO_BLOCK_SIZE);
-		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-			inp_sampleL[i] = inp_sampleL[i] * inp_sampleR[0] + out_eq[i] * 0.3f * cab_volume * (1.0f - inp_sampleR[0]);
-	}
-	for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
-	{
-		if(prog_data[ga_on])
-			inp_sampleL[i] *= gat_pres[i];
-		if(system_file.gat_on)
-			inp_sampleL[i] *= gat_glob[i];
-		if(!ind_clean)
+		if(!prog_data[eq_po])
 		{
-			if(prog_data[fx_type])
+			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, AUDIO_BLOCK_SIZE);
+			if(prog_data[eq_on])
+				arm_copy_f32(out_eq, inp_sampleL, AUDIO_BLOCK_SIZE);
+		}
+		if(prog_data[preamp_on] && !prog_data[od_on])
+		{
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+				out_eq_preamp[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl]) * pream_vol;
+			arm_biquad_cascade_df1_f32(&preamp_instance, out_eq_preamp, inp_sampleL, AUDIO_BLOCK_SIZE);
+		}
+		if(prog_data[amp_on])
+		{
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+				inp_sampleL[i] = soft_clip_amp(inp_sampleL[i] * amp_vol) * amp_sla;
+			if(prog_data[a_t])
 			{
-				if(prog_data[er_on])
+				arm_fir_f32(&amp_inst, inp_sampleL, out_fir_amp, AUDIO_BLOCK_SIZE);
+				for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+					inp_sampleL[i] = out_fir_amp[i] * 0.6f;
+			}
+		}
+		if(prog_data[hip_on])
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+				inp_sampleL[i] = hpFilt.filt(inp_sampleL[i], prog_data[hip_on]);
+		if(prog_data[eq_po])
+		{
+			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, AUDIO_BLOCK_SIZE);
+			if(prog_data[eq_on])
+				arm_copy_f32(out_eq, inp_sampleL, AUDIO_BLOCK_SIZE);
+		}
+		if(prog_data[lop_on])
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+				inp_sampleL[i] = lpFilt.filt(inp_sampleL[i], prog_data[lop_on]);
+		arm_biquad_cascade_df1_f32(&presen_instance, inp_sampleL, out_sample, AUDIO_BLOCK_SIZE);
+		if(prog_data[pr_on] || prog_data[amp_on])
+			arm_copy_f32(out_sample, inp_sampleL, AUDIO_BLOCK_SIZE);
+
+		if(prog_data[phaz_on] == 2)
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+				inp_sampleL[i] = phaser.phaser(inp_sampleL[i]);
+
+		if(prog_data[flan_on] == 2)
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+				flanger.flanger(inp_sampleL + i);
+
+		if(prog_data[cab_on] && impulse_flag && !system_file.glob_cab)
+		{
+			inp_sampleR[0] = prog_data[ir_mix] * 0.0079365079365079f;
+			arm_fir_f32(&cab_inst, inp_sampleL, out_eq, AUDIO_BLOCK_SIZE);
+			for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+				inp_sampleL[i] = inp_sampleL[i] * inp_sampleR[0] + out_eq[i] * 0.3f * cab_volume * (1.0f - inp_sampleR[0]);
+		}
+
+		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+		{
+			if(prog_data[ga_on])
+				inp_sampleL[i] *= gat_pres[i];
+			if(system_file.gat_on)
+				inp_sampleL[i] *= gat_glob[i];
+			if(!ind_clean)
+			{
+				if(prog_data[fx_type])
 				{
-					if(rev_vo < 1.0f)
-						rev_vo += 0.001f;
-					tail_vol = 1.0f;
-				}
-				else
-				{
-					if(rev_vo > 0.0f)
-						rev_vo -= 0.001f;
-					if(rev_vo < 0.0f)
+					if(prog_data[er_on])
 					{
-						rev_vo = 0.0f;
+						if(rev_vo < 1.0f)
+							rev_vo += 0.001f;
+						tail_vol = 1.0f;
+					}
+					else
+					{
+						if(rev_vo > 0.0f)
+							rev_vo -= 0.001f;
+						if(rev_vo < 0.0f)
+						{
+							rev_vo = 0.0f;
+							if(!prog_data[rev_tail])
+								revmem_clean();
+						}
 						if(!prog_data[rev_tail])
-							revmem_clean();
+						{
+							if(tail_vol > 0.0f)
+								tail_vol -= 0.01f;
+							if(tail_vol < 0.0f)
+								tail_vol = 0.0f;
+						}
 					}
-					if(!prog_data[rev_tail])
-					{
-						if(tail_vol > 0.0f)
-							tail_vol -= 0.01f;
-						if(tail_vol < 0.0f)
-							tail_vol = 0.0f;
-					}
+					if(!ind_clean)
+						rev_pre_buf[rev_pre_po] = rev_lp.filt(rev_hp.filt(inp_sampleL[i])) + rev_fb * rev_fb_val;
+					else
+						rev_pre_buf[rev_pre_po] = 0.0f;
+					rev_fb = rev_pre_buf[(rev_pre_po + rev_pre) % pre_size];
+					accumul = (rev_pre_buf[rev_pre_po] * rev_nopr + rev_fb) * 0.3f;
+					if(!rev_pre_po)
+						rev_pre_po = pre_size;
+					rev_pre_po--;
+					reverb();
+					rev_outR *= tail_vol * rv_wet;
+					rev_outL *= tail_vol * rv_wet;
 				}
-				if(!ind_clean)
-					rev_pre_buf[rev_pre_po] = rev_lp.filt(rev_hp.filt(inp_sampleL[i])) + rev_fb * rev_fb_val;
 				else
-					rev_pre_buf[rev_pre_po] = 0.0f;
-				rev_fb = rev_pre_buf[(rev_pre_po + rev_pre) % pre_size];
-				accumul = (rev_pre_buf[rev_pre_po] * rev_nopr + rev_fb) * 0.3f;
-				if(!rev_pre_po)
-					rev_pre_po = pre_size;
-				rev_pre_po--;
-				reverb();
-				rev_outR *= tail_vol * rv_wet;
-				rev_outL *= tail_vol * rv_wet;
-			}
-			else
-			{
-				if(prog_data[er_on])
-					accumul = inp_sampleL[i] * ear_vol;
-				else
-					accumul = 0.0f;
-				early_refl();
-				del_outL = (inp_sampleL[i] + rev_outL) * 32767.0f;
-				del_proc(&del_outL, &del_outR);
-				del_outL *= 3.051850947599719e-5;
-				del_outR *= 3.051850947599719e-5;
-			}
-		}
-		else
-			ind_clean1 = 1;
-
-		inp_sampleR[i] = inp_sampleL[i] + rev_outR + del_outR;
-		inp_sampleL[i] += rev_outL + del_outL;
-
-		ind_out_l[0] = abs((int32_t) (inp_sampleL[i] * 8388607.0f * p_vol));
-		ind_out_r[0] = abs((int32_t) (inp_sampleR[i] * 8388607.0f * p_vol));
-		if(ind_out_l[0] > ind_out_l[1])
-			ind_out_l[1] = ind_out_l[0];
-		if(ind_out_r[0] > ind_out_r[1])
-			ind_out_r[1] = ind_out_r[0];
-		if((condish == volum || condish == cab_vol_ind) && ind_poin++ == 2000 && !tuner_use)
-		{
-			ind_poin = 0;
-			display_task->VolInd();
-		}
-
-		if(metronom_start)
-		{
-			if(metronom_fl)
-			{
-				ccl[i] = metronom_cod[metronom_counter] << 16;
-				int32_t in_l = ccl[i] >> 8;
-				in_l = in_l * ((metronom_vol * metronom_vol) * pow_temp) * 0.000000119f;
-				inp_sampleL[i] += in_l;
-				inp_sampleR[i] += in_l;
-				metronom_counter++;
-				if(metronom_counter == 3935)
 				{
-					metronom_fl = 0;
-					metronom_counter = 0;
+					if(prog_data[er_on])
+						accumul = inp_sampleL[i] * ear_vol;
+					else
+						accumul = 0.0f;
+					early_refl();
+					del_outL = (inp_sampleL[i] + rev_outL) * 32767.0f;
+					del_proc(&del_outL, &del_outR);
+					del_outL *= 3.051850947599719e-5;
+					del_outR *= 3.051850947599719e-5;
 				}
 			}
-			if(!temp_counter++)
-				metronom_fl = 1;
 			else
+				ind_clean1 = 1;
+
+			inp_sampleR[i] = inp_sampleL[i] + rev_outR + del_outR;
+			inp_sampleL[i] += rev_outL + del_outL;
+
+			ind_out_l[0] = abs((int32_t) (inp_sampleL[i] * 8388607.0f * p_vol));
+			ind_out_r[0] = abs((int32_t) (inp_sampleR[i] * 8388607.0f * p_vol));
+			if(ind_out_l[0] > ind_out_l[1])
+				ind_out_l[1] = ind_out_l[0];
+			if(ind_out_r[0] > ind_out_r[1])
+				ind_out_r[1] = ind_out_r[0];
+			if((condish == volum || condish == cab_vol_ind) && ind_poin++ == 2000 && !tuner_use)
 			{
-				if(temp_counter == metronom_int)
-					temp_counter = 0;
+				ind_poin = 0;
+				display_task->VolInd();
 			}
 		}
+
+		metronome.process(inp_sampleL, inp_sampleR);
 	}
 
 	for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
@@ -423,7 +425,6 @@ void audioProcessBlock()
 		else
 			dac_data[a].right = ccr[i];
 	}
-	//gpioc.pin13_reset();
 }
 
 void audioCaptureBlock()
@@ -458,25 +459,5 @@ void audioCaptureBlock()
 
 		inp_sampleL[i] = ccl[i] * 0.000000119f;
 		inp_sampleR[i] = ccr[i] * 0.000000119f;
-
-		inp_sampleR[i] = gate_pres.dc_block(inp_sampleR[i]);
-		gat_pres[i] = gate_pres.gate_out(inp_sampleR[i]);
-		gat_glob[i] = gate_glob.gate_out(inp_sampleR[i]);
-
-		if(moduleRuntime[1].descriptor != nullptr && moduleRuntime[1].descriptor->parameter[0].value)
-			inp_sampleL[i] = compr.compr(inp_sampleL[i]);
-
-		c3[i] = inp_sampleL[i];
-		if(tuner_use)
-		{
-			if(fabsf(c3[i]) < 0.0005f)
-				c3[i] = 0.0f;
-			SpectrumBuffsUpdate(c3[i]);
-		}
-
-//		if(prog_data[phaz_on] == 1)
-//			inp_sampleL[i] = phaser.phaser(inp_sampleL[i]);
-//		if(prog_data[flan_on] == 1)
-//			flanger.flanger(inp_sampleL + i);
 	}
 }

@@ -69,13 +69,14 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 {
 	if(m_disabled) return;
 
-//	switch(m_displayType)
-//	{
-//		case TDisplayType::Number:
-//		{
+	switch(m_displayType)
+	{
+		case TDisplayType::Number:
+		{
+			display_task->num_5x7(m_xDisplayPosition, yDisplayPosition, m_descriptor->value, 0);
 //			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
-//			break;
-//		}
+			break;
+		}
 //
 //		case TDisplayType::String:
 //		{
@@ -102,16 +103,16 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 //			break;
 //		}
 //
-//		case TDisplayType::Custom:
-//		{
-//			if(printCallback && m_descriptor) printCallback(m_descriptor->ptr);
-//			break;
-//		}
-//	}
+		case TDisplayType::Custom:
+		{
+			if(printCallback && m_descriptor) printCallback(&m_descriptor->value);
+			break;
+		}
+	}
 }
 
-//void CustomParam::setData()
-//{
-//	if(setToDspCallback && m_descriptor) setToDspCallback(m_descriptor->value);
-//	else BaseParam::setData();
-//}
+void CustomParam::setData()
+{
+	if(setCallback && m_descriptor) setCallback(&m_descriptor->value);
+	else BaseParam::setData();
+}

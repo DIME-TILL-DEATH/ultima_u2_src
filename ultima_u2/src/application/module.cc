@@ -265,3 +265,13 @@ void preampChangeType(TModuleDescriptor &module, const TPreampModule &state, uin
 //	if (module.parameterCount >= 4) module.parameter[3].ptr = &preamp_current_vals[3];
 //	if (module.parameterCount >= 5) module.parameter[4].ptr = &preamp_current_vals[4];
 }
+
+TModuleDescriptor makeMetronomeModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+{
+	TModuleDescriptor module = makeEmptyModule(METRONOME_MODULE, channel, moduleId, instanceId);
+	initModuleParameters(module);
+	addParam(module, "on", 0, 1);
+	addParam(module, "tempo", 20, 240);
+	addParam(module, "volume", 0, 127);
+	return module;
+}

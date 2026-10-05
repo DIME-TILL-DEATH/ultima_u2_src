@@ -4,14 +4,18 @@
 #include "preset.h"
 
 #include "processing/audio_process.h"
+#include "processing/metronome.h"
 
 dsp_task_t *dsp_task;
-
 
 //------------------------------------------------------------------------------
 void dsp_task_t::code()
 {
 	audioProcessInit();
+
+	metronomeRuntime.stage = &metronome;
+	metronomeRuntime.descriptor = &metronomeModuleDescriptor;
+	metronomeRuntime.dirty = true;
 
 	while(1)
 	{
@@ -25,6 +29,9 @@ void dsp_task_t::code()
 				moduleRuntime[i].dirty = false;
 			}
 		}
+
+		if(metronomeRuntime.dirty)
+			metronome.updateParams(&metronomeModuleDescriptor);
 
 		audioProcessBlock();
 	}

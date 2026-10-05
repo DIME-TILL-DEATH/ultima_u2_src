@@ -20,7 +20,10 @@ enum TModuleType
 	DL_MODULE,
 	WH_MODULE,
 	TR_MODULE,
-	CH_MODULE
+	CH_MODULE,
+
+	// GLOBAL
+	METRONOME_MODULE
 };
 
 enum TModuleChannel
@@ -38,9 +41,6 @@ typedef struct
 	uint8_t parameterCount;
 	uint8_t moduleId;	// number of module in the preset, for example: 0 - first module, 1 - second module, etc.
 	uint8_t instaceId;	// number of module type instance in the preset
-
-//	bool needUpdateParameters;
-//	AbstractStage *processingStage;
 } TModuleDescriptor;
 
 TModuleDescriptor makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t moduleId, uint8_t instanceId);
@@ -55,6 +55,7 @@ TModuleDescriptor makePhaserModule(uint8_t moduleId, uint8_t instanceId, TModule
 TModuleDescriptor makeFlangerModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
 TModuleDescriptor makeReverbModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
 TModuleDescriptor makeDelayModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+TModuleDescriptor makeMetronomeModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
 
 typedef struct
 {

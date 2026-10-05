@@ -144,7 +144,6 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 	switch(m_type)
 	{
 		case BaseParam::GUI_PARAMETER_LEVEL:
-//			DisplayTask->ParamInd(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			display_task->par_indic(m_xDisplayPosition, yDisplayPosition, m_descriptor->value + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_MIX:
@@ -158,7 +157,7 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 //			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_NUM:
-//			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
+			display_task->num_5x7(m_xDisplayPosition, yDisplayPosition, m_descriptor->value + m_offset, 0);
 			break;
 		default: break;
 	}
@@ -169,9 +168,6 @@ void BaseParam::encoderSpeedIncrease()
 	tim6.disable();
 
 	int16_t data = m_descriptor->value;
-//	if(m_byteSize > 1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
-//	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
-
 
 	if(tim6.update_interrupt_flag())
 	{
@@ -203,7 +199,6 @@ void BaseParam::encoderSpeedIncrease()
 		}
 	}
 
-//	memcpy(m_descriptor->ptr, &data, m_byteSize);
 	m_descriptor->value = data;
 
 	tim6.counter = 0;
@@ -218,9 +213,6 @@ void BaseParam::encoderSpeedDecrease()
 	tim6.disable();
 
 	int32_t data = m_descriptor->value;
-//	if(m_byteSize>1) memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
-//	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
-
 
 	if(tim6.update_interrupt_flag())
 	{
@@ -251,8 +243,6 @@ void BaseParam::encoderSpeedDecrease()
 			else data -= 1;
 		}
 	}
-
-//	memcpy(m_descriptor->ptr, &data, m_byteSize);
 
 	m_descriptor->value = data;
 

@@ -22,5 +22,6 @@ void audioProcessBlock();
 
 
 extern TModuleRuntime moduleRuntime[MAX_PRESET_MODULES];
+extern TModuleRuntime metronomeRuntime;
 
 #endif /* AUDIO_PROCESS_H_ */
