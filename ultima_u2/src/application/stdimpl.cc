@@ -71,7 +71,7 @@ extern "C" void vApplicationMallocFailedHook(void)
 	nop_loop();
 }
 
-extern "C" void vApplicationStackOverflowHook(TaskHandle_t *task, char *task_name)
+extern "C" void vApplicationStackOverflowHook(TaskHandle_t task, char *task_name)
 {
 	(void) task;
 	(void) task_name;
