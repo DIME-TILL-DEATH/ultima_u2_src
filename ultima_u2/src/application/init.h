@@ -124,7 +124,7 @@ extern uint8_t ext_fsw_b1;
 extern uint8_t ext_fsw_b2;
 extern uint8_t tuner_use;
 extern uint8_t start_fl;
-extern float c3[];
+//extern float c3[];
 extern volatile uint8_t ind_flag;
 extern float pr_ga;
 

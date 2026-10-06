@@ -12,9 +12,15 @@ public:
 	virtual void updateParams(const TModuleDescriptor* module) {};
 	virtual void process(float* sampleL, float* sampleR) {};
 
-	static constexpr uint8_t blockSize = 32;
+	static constexpr uint8_t audioBlockSize = 16;
+	static constexpr float fs = 48000.0f;
+
+	float dcBlock(float in);
 protected:
 	bool m_enabled{false};
+
+	float in_dc_old{0};
+	float out_dc_old{0};
 };
 
 #endif /* ABSTRACTSTAGE_H_ */

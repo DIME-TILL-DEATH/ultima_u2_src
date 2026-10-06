@@ -41,8 +41,10 @@ void note_tun(void)
 	for(uint8_t i = 0 ; i < 2 ; i++)
 	{
 		sh1106_gotoXY(56,i + 1);
+
+
 		extern float c3;
-		if(c3)for(uint8_t f = 0; f < 15 ; f++)font_buf[f] = not_tun[f*2 + i + not_ind[t_no]*30];
+		if(c3) for(uint8_t f = 0; f < 15 ; f++)font_buf[f] = not_tun[f*2 + i + not_ind[t_no]*30];
 		else for(uint8_t f = 0; f < 15 ; f++)font_buf[f] = tire[f*2 + i];
 		spi3_dma_init_transfer(15,(uint32_t*)font_buf);
 	}

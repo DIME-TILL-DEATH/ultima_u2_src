@@ -3,7 +3,6 @@
 #include "math.h"
 #include "init.h"
 #include <vdt/vdt.h>
-#include "audio_process.h"
 
 void CompressorStage::comp_par(uint32_t val)
 {
@@ -41,7 +40,7 @@ void CompressorStage::process(float* sampleL, float* sampleR)
 {
 	if(!m_enabled) return;
 
-	for(uint8_t i=0; i<AUDIO_BLOCK_SIZE; i++)
+	for(uint8_t i=0; i<audioBlockSize; i++)
 	{
 		float bu_sum = fabsf(sampleL[i]);
 		bu_sum += m_envelope.DC_OFFSET;

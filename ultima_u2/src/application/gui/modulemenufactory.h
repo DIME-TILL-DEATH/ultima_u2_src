@@ -10,7 +10,7 @@ public:
 	static AbstractMenu* createModuleMenu(AbstractMenu* parent, TModuleRuntime* module);
 
 private:
-
+	static AbstractMenu* createGateMenu(AbstractMenu* parent, TModuleRuntime* module);
 	static AbstractMenu* createCompressorMenu(AbstractMenu* parent, TModuleRuntime* module);
 	static AbstractMenu* createMetronomeMenu(AbstractMenu* parent, TModuleRuntime* module);
 };

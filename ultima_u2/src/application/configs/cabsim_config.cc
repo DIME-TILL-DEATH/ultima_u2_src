@@ -1,9 +1,10 @@
-#include <processing/compressorstage.h>
 #include "cabsim_config.h"
 
 #include <string.h>
 
 #include "processing/audio_process.h"
+#include "processing/gatestage.h"
+#include "processing/compressorstage.h"
 #include "module.h"
 
 static void setParameterValue(TModuleDescriptor& module, uint8_t index, int16_t value)
@@ -197,11 +198,16 @@ static void addEq(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config
 	addModule(preset, eq);
 }
 
+extern GateStage gate_pres;
 static void addNoiseGate(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
 	TModuleDescriptor gate = makeNoiseGateModule(moduleId, 0, MONO_CHANNEL);
 	applyNoiseGateValues(gate, config);
 	addModule(preset, gate);
+
+	moduleRuntime[moduleId].stage = &gate_pres;
+	moduleRuntime[moduleId].descriptor = &preset.module[moduleId];
+	moduleRuntime[moduleId].dirty = true;
 }
 
 extern CompressorStage compr;

@@ -1,6 +1,6 @@
 //gui_task->update();  приведет к обновлению в gui_task_t::code()
 #include <processing/compressorstage.h>
-#include "gate.h"
+#include <processing/gatestage.h>
 #include "preset.h"
 
 //---------------
@@ -31,8 +31,8 @@
 
 AbstractMenu *mainMenu = nullptr;
 
-extern Gate gate_pres;
-extern Gate gate_glob;
+extern GateStage gate_pres;
+extern GateStage gate_glob;
 extern CompressorStage compr;
 extern Distor dist;
 extern PassFilt hpFilt;
@@ -328,7 +328,7 @@ void compress_init(void)
 {
 	condish = compresss_men;
 
-	currentMenu = ModuleMenuFactory::createModuleMenu(mainMenu, &moduleRuntime[1]);
+	currentMenu = ModuleMenuFactory::createModuleMenu(currentMenu, &moduleRuntime[1]);
 	currentMenu->show();
 
 	par_num = 0;
@@ -487,10 +487,6 @@ void param_set(void)
 		break;
 	}
 
-	for(uint8_t i = 0;i < 3;i++)
-		gate_pres.gate_par(i | (prog_data[i + ga_th] << 8));
-//	for(uint8_t i = 1;i < 6;i++)
-//		compr.comp_par(i | (prog_data[i + compr_on] << 8));
 	for(uint8_t i = 0;i < 8;i++)
 		phaser.phaser_par(i | (prog_data[i + phaz_on]) << 8);
 	for(uint8_t i = 0;i < 8;i++)
@@ -666,53 +662,22 @@ void tun_init(void)
 }
 void gate_init(uint8_t num)
 {
-	display_task->clear();
-	for(uint8_t i = 0;i < 4;i++)
-	{
-		display_task->line_5x7(0, i, (char*) gate_list + i * 10, 0);
-		if(!num)
-		{
-			switch(i)
-			{
-			case 0:
-				display_task->line_5x7(62, i, (char*) on_off + prog_data[ga_on] * 4, 0);
-				break;
-			case 1:
-				display_task->par_indic(62, i, prog_data[ga_th]);
-				break;
-			case 2:
-				display_task->par_indic(62, i, prog_data[ga_at]);
-				break;
-			case 3:
-				display_task->par_indic(62, i, prog_data[ga_de]);
-				break;
-			}
-		}
-		else
-		{
-			switch(i)
-			{
-			case 0:
-				display_task->line_5x7(62, i, (char*) on_off + system_file.gat_on * 4, 0);
-				break;
-			case 1:
-				display_task->par_indic(62, i, system_file.gat_thresh);
-				break;
-			case 2:
-				display_task->par_indic(62, i, system_file.gat_att);
-				break;
-			case 3:
-				display_task->par_indic(62, i, system_file.gat_dec);
-				break;
-			}
-		}
-	}
+	extern TModuleRuntime globalGateRuntime;
+
 	eq_num = num;
+	if(!eq_num)
+		currentMenu = ModuleMenuFactory::createModuleMenu(currentMenu, &moduleRuntime[0]);
+	else
+		currentMenu = ModuleMenuFactory::createModuleMenu(currentMenu, &globalGateRuntime);
+
+	currentMenu->show();
+
 	condish = gate_menu;
 	edit_fl = 0;
 	par_num = 0;
 	tim4_start(0);
 }
+
 void phaz_init(void)
 {
 	display_task->clear();
@@ -1439,15 +1404,6 @@ void controll_run(void)
 					break;
 				}
 				m_vol_fl = 0;
-				/*if(prog_data[preamp_on] || prog_data[od_on])
-				 {
-				 pr_ga = prog_data[prc_gain + prog_data[preamp_on] - 1] * prog_data[prc_gain + prog_data[preamp_on] - 1] * 0.001178002f + 1.0f;
-				 switch(prog_data[pr_over_cl + prog_data[preamp_on] - 1]){
-				 case 0:dist.clip_LPF(8000.0f,0);dist.clip_LPF(8000.0f,1);dist.clip_HPF(120.0f,0);dist.clip_HPF(120.0f,1);break;
-				 case 1:dist.clip_LPF(4000.0f,0);dist.clip_LPF(4000.0f,1);dist.clip_HPF(20.0f,0);dist.clip_HPF(20.0f,1);break;
-				 case 2:dist.clip_LPF(3000.0f,0);dist.clip_LPF(3000.0f,1);dist.clip_HPF(20.0f,0);dist.clip_HPF(20.0f,1);break;
-				 }
-				 }*/
 				if(condish == men_edit)
 				{
 					if(prog_data[preamp_on] || prog_data[od_on])
@@ -2163,7 +2119,7 @@ void gui_task_t::prog_ch(void)
 		for(uint8_t i = 0;i < 4;i++)
 			prog_data[ph_mix + i] = ph_in[i];
 	param_set();
-	for(uint8_t i = 0;i < (AUDIO_BLOCK_SIZE * 2);i++)
+	for(uint8_t i = 0;i < (AbstractStage::audioBlockSize * 2);i++)
 		adc_data[i].left = adc_data[i].right = dac_data[i].left = dac_data[i].right = 0;
 	gpioc.pin13_set();
 	gpioa.pin0_set();
@@ -3518,204 +3474,6 @@ void gui_task_t::code()
 			break;
 //-----------------------------------------------Gate--------------------------------------------------
 		case gate_menu:
-			if(!tim4_fl)
-			{
-				if(!edit_fl)
-					display_task->line_5x7(0, par_num, (char*) gate_list + par_num * 10, 2);
-			}
-			else
-			{
-				if(!edit_fl)
-					display_task->line_5x7(0, par_num, (char*) gate_list + par_num * 10, 0);
-			}
-			if(encoder_fl1)
-			{
-				if(encoder_fl == 1)
-				{
-					if(!edit_fl)
-					{
-						if(par_num)
-						{
-							display_task->line_5x7(0, par_num, (char*) gate_list + par_num-- * 10, 0);
-							tim4_start(1);
-						}
-					}
-					else
-					{
-						switch(par_num)
-						{
-						case 1:
-							if(!eq_num)
-							{
-								if(prog_data[ga_th])
-								{
-									prog_data[ga_th] = enc_speed_dec(prog_data[ga_th], 0);
-									display_task->par_indic(62, par_num, prog_data[ga_th]);
-									gate_pres.gate_par(0 | (prog_data[ga_th] << 8));
-								}
-							}
-							else
-							{
-								if(system_file.gat_thresh)
-								{
-									system_file.gat_thresh = enc_speed_dec(system_file.gat_thresh, 0);
-									display_task->par_indic(62, par_num, system_file.gat_thresh);
-									gate_glob.gate_par(0 | (system_file.gat_thresh << 8));
-								}
-							}
-							break;
-						case 2:
-							if(!eq_num)
-							{
-								if(prog_data[ga_at])
-								{
-									prog_data[ga_at] = enc_speed_dec(prog_data[ga_at], 0);
-									display_task->par_indic(62, par_num, prog_data[ga_at]);
-									gate_pres.gate_par(1 | (prog_data[ga_at] << 8));
-								}
-							}
-							else
-							{
-								if(system_file.gat_att)
-								{
-									system_file.gat_att = enc_speed_dec(system_file.gat_att, 0);
-									display_task->par_indic(62, par_num, system_file.gat_att);
-									gate_glob.gate_par(1 | (system_file.gat_att << 8));
-								}
-							}
-							break;
-						case 3:
-							if(!eq_num)
-							{
-								if(prog_data[ga_de])
-								{
-									prog_data[ga_de] = enc_speed_dec(prog_data[ga_de], 0);
-									display_task->par_indic(62, par_num, prog_data[ga_de]);
-									gate_pres.gate_par(2 | (prog_data[ga_de] << 8));
-								}
-							}
-							else
-							{
-								if(system_file.gat_dec)
-								{
-									system_file.gat_dec = enc_speed_dec(system_file.gat_dec, 0);
-									display_task->par_indic(62, par_num, system_file.gat_dec);
-									gate_glob.gate_par(2 | (system_file.gat_dec << 8));
-								}
-							}
-							break;
-						}
-					}
-				}
-				if(encoder_fl == 2)
-				{
-					if(!edit_fl)
-					{
-						if(par_num < 3)
-						{
-							display_task->line_5x7(0, par_num, (char*) gate_list + par_num++ * 10, 0);
-							tim4_start(1);
-						}
-					}
-					else
-					{
-						switch(par_num)
-						{
-						case 1:
-							if(!eq_num)
-							{
-								if(prog_data[ga_th] < 127)
-								{
-									prog_data[ga_th] = enc_speed_inc(prog_data[ga_th], 127);
-									display_task->par_indic(62, par_num, prog_data[ga_th]);
-									gate_pres.gate_par(0 | (prog_data[ga_th] << 8));
-								}
-							}
-							else
-							{
-								if(system_file.gat_thresh < 127)
-								{
-									system_file.gat_thresh = enc_speed_inc(system_file.gat_thresh, 127);
-									display_task->par_indic(62, par_num, system_file.gat_thresh);
-									gate_glob.gate_par(0 | (system_file.gat_thresh << 8));
-								}
-							}
-							break;
-						case 2:
-							if(!eq_num)
-							{
-								if(prog_data[ga_at] < 127)
-								{
-									prog_data[ga_at] = enc_speed_inc(prog_data[ga_at], 127);
-									display_task->par_indic(62, par_num, prog_data[ga_at]);
-									gate_pres.gate_par(1 | (prog_data[ga_at] << 8));
-								}
-							}
-							else
-							{
-								if(system_file.gat_att < 127)
-								{
-									system_file.gat_att = enc_speed_inc(system_file.gat_att, 127);
-									display_task->par_indic(62, par_num, system_file.gat_att);
-									gate_glob.gate_par(1 | (system_file.gat_att << 8));
-								}
-							}
-							break;
-						case 3:
-							if(!eq_num)
-							{
-								if(prog_data[ga_de] < 127)
-								{
-									prog_data[ga_de] = enc_speed_inc(prog_data[ga_de], 127);
-									display_task->par_indic(62, par_num, prog_data[ga_de]);
-									gate_pres.gate_par(2 | (prog_data[ga_de] << 8));
-								}
-							}
-							else
-							{
-								if(system_file.gat_dec < 127)
-								{
-									system_file.gat_dec = enc_speed_inc(system_file.gat_dec, 127);
-									display_task->par_indic(62, par_num, system_file.gat_dec);
-									gate_glob.gate_par(2 | (system_file.gat_dec << 8));
-								}
-							}
-							break;
-						}
-					}
-				}
-			}
-			if(encoder_but)
-			{
-				if(!par_num)
-				{
-					if(!eq_num)
-					{
-						++prog_data[ga_on];
-						prog_data[ga_on] &= 1;
-						display_task->line_5x7(62, 0, (char*) on_off + prog_data[ga_on] * 4, 0);
-					}
-					else
-					{
-						++system_file.gat_on;
-						system_file.gat_on &= 1;
-						display_task->line_5x7(62, 0, (char*) on_off + system_file.gat_on * 4, 0);
-					}
-				}
-				else
-				{
-					if(!edit_fl)
-					{
-						edit_fl = 1;
-						display_task->line_5x7(0, par_num, (char*) gate_list + par_num * 10, 2);
-					}
-					else
-					{
-						edit_fl = 0;
-						display_task->line_5x7(0, par_num, (char*) gate_list + par_num * 10, 0);
-					}
-				}
-			}
 			if(edit_but)
 			{
 				if(eq_num)

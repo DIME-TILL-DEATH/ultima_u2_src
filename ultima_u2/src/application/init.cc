@@ -9,15 +9,16 @@
 #include "arm_math.h"
 #include "adc.h"
 
-#include "gate.h"
+
 #include "distor.h"
 #include "phaser.h"
 #include "flanger.h"
 
 #include "processing/audio_process.h"
+#include "processing/gatestage.h"
 
-__attribute__((section(".dtcm_data"))) ad_data_t adc_data[AUDIO_BLOCK_SIZE * 2];
-__attribute__((section(".dtcm_data"))) da_data_t dac_data[AUDIO_BLOCK_SIZE * 2];
+__attribute__((section(".dtcm_data"))) ad_data_t adc_data[AbstractStage::audioBlockSize * 2];
+__attribute__((section(".dtcm_data"))) da_data_t dac_data[AbstractStage::audioBlockSize  * 2];
 __attribute__((section(".itcm_data"))) float phas[14];
 __attribute__((section(".itcm_data"))) float memflan[2048];
 
@@ -303,7 +304,7 @@ void init(void)
 	dma2.clock_enable();
 
 	dma2_stream5.channel_sai1_b();
-	dma2_stream5.number_of_data = AUDIO_BLOCK_SIZE * 4;
+	dma2_stream5.number_of_data = AbstractStage::audioBlockSize  * 4;
 	dma2_stream5.peripheral_address = ((uint32_t) &sai1.block_b.data);
 	dma2_stream5.memory0_address = ((uint32_t) adc_data);
 	dma2_stream5.direction_peripheral_to_memory();
@@ -320,7 +321,7 @@ void init(void)
 	nvic.dma2_stream5_enable();
 
 	dma2_stream1.channel_sai1_a();
-	dma2_stream1.number_of_data = AUDIO_BLOCK_SIZE * 4;
+	dma2_stream1.number_of_data = AbstractStage::audioBlockSize  * 4;
 	dma2_stream1.peripheral_address = ((uint32_t) &sai1.block_a.data);
 	dma2_stream1.memory0_address = ((uint32_t) dac_data);
 	dma2_stream1.direction_memory_to_peripheral();

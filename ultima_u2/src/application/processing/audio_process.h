@@ -6,10 +6,7 @@
 #include "module.h"
 #include "abstractstage.h"
 
-#define AUDIO_BLOCK_SIZE 16
 #define MAX_PRESET_MODULES 10
-
-
 
 struct TModuleRuntime
 {
@@ -21,7 +18,6 @@ struct TModuleRuntime
 void audioProcessInit();
 void audioCaptureBlock();
 void audioProcessBlock();
-
 
 extern TModuleRuntime moduleRuntime[MAX_PRESET_MODULES];
 extern TModuleRuntime metronomeRuntime;

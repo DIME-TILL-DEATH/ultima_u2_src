@@ -21,7 +21,7 @@ static void addParam(TModuleDescriptor &module, const char *name, uint16_t min =
 static void initModuleParameters(TModuleDescriptor &module)
 {
 	module.parameterCount = 0;
-	for(uint8_t i = 0;i < 32;++i)
+	for(uint8_t i = 0;i < MAX_MODULE_PARAMS; ++i)
 	{
 		module.parameter[i].value = 0;
 		module.parameter[i].min = 0;
@@ -46,12 +46,23 @@ TModuleDescriptor makeNoiseGateModule(uint8_t moduleId, uint8_t instanceId, TMod
 {
 	TModuleDescriptor module = makeEmptyModule(NG_MODULE, channel, moduleId, instanceId);
 	initModuleParameters(module);
-	addParam(module, "on", 0, 1);
-	addParam(module, "threshold", 0, 127);
-	addParam(module, "attack", 0, 127);
-	addParam(module, "decay", 0, 127);
+	addParam(module, "Gate", 0, 1);
+	addParam(module, "Threshold", 0, 127);
+	addParam(module, "Attack", 0, 127);
+	addParam(module, "Decay", 0, 127);
 	return module;
 }
+
+//TModuleDescriptor makeGlobalNoiseGateModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
+//{
+//	TModuleDescriptor module = makeEmptyModule(GLOBAL_NG_MODULE, channel, moduleId, instanceId);
+//	initModuleParameters(module);
+//	addParam(module, "Gate", 0, 1);
+//	addParam(module, "Threshold", 0, 127);
+//	addParam(module, "Attack", 0, 127);
+//	addParam(module, "Decay", 0, 127);
+//	return module;
+//}
 
 TModuleDescriptor makeCompressorModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel)
 {

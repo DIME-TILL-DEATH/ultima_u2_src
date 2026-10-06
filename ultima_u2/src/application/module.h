@@ -26,6 +26,7 @@ enum TModuleType
 
 	// GLOBAL
 	METRONOME_MODULE
+//	GLOBAL_NG_MODULE = -3
 };
 
 enum TModuleChannel
@@ -35,19 +36,21 @@ enum TModuleChannel
 
 typedef void (*updateModuleParametersHandler)(void);
 
+#define MAX_MODULE_PARAMS 16
 typedef struct
 {
 	TModuleType type;
 	TModuleChannel channel;
-	TParamDescriptor parameter[16];
+	TParamDescriptor parameter[MAX_MODULE_PARAMS];
 	uint8_t parameterCount;
-	uint8_t moduleId;	// number of module in the preset, for example: 0 - first module, 1 - second module, etc.
+	int8_t moduleId;	// negative values for global modules
 	uint8_t instaceId;	// number of module type instance in the preset
 } TModuleDescriptor;
 
 TModuleDescriptor makeEmptyModule(TModuleType type, TModuleChannel channel, uint8_t moduleId, uint8_t instanceId);
 
 TModuleDescriptor makeNoiseGateModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
+//TModuleDescriptor makeGlobalNoiseGateModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
 TModuleDescriptor makeCompressorModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
 TModuleDescriptor makePreampModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);
 TModuleDescriptor makeAmpModule(uint8_t moduleId, uint8_t instanceId, TModuleChannel channel = MONO_CHANNEL);

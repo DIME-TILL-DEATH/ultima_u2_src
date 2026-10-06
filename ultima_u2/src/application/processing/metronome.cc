@@ -1,6 +1,5 @@
 #include "metronome.h"
 
-#include "audio_process.h"
 #include "init.h"
 
 Metronome metronome;
@@ -15,6 +14,8 @@ Metronome::Metronome()
 	metronomeModuleDescriptor.type = METRONOME_MODULE;
 	metronomeModuleDescriptor.channel = STEREO_CHANNEL;
 	metronomeModuleDescriptor.parameterCount = 3;
+	metronomeModuleDescriptor.instaceId = 0;
+	metronomeModuleDescriptor.moduleId = -2;
 
 	metronomeModuleDescriptor.parameter[0].name = "Metronome";
 	metronomeModuleDescriptor.parameter[0].value = 0;
@@ -35,7 +36,7 @@ Metronome::Metronome()
 
 void Metronome::process(float* sampleL, float* sampleR)
 {
-	for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+	for(uint8_t i = 0;i < audioBlockSize;i++)
 	{
 		if(metronom_start)
 		{

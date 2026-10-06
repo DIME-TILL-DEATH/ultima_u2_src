@@ -4,7 +4,7 @@
 
 void VolumeStage::process(float* sampleL, float* sampleR)
 {
-	for(uint8_t i = 0; i < AUDIO_BLOCK_SIZE; i++)
+	for(uint8_t i = 0; i < audioBlockSize; i++)
 	{
 		sampleL[i] *= m_volumeLevel;
 		sampleR[i] *= m_volumeLevel;
