@@ -1,7 +1,7 @@
 #ifndef SRC_APPLICATION_INIT_H_
 #define SRC_APPLICATION_INIT_H_
 
-#include "appdefs.h"
+//#include "appdefs.h"
 #include "math.h"
 #include "gui.h"
 #include <vdt/vdt.h>

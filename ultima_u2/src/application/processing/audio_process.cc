@@ -1,3 +1,4 @@
+#include <processing/compressorstage.h>
 #include "audio_process.h"
 
 #include "init.h"
@@ -9,7 +10,6 @@
 #include "spectrum.h"
 
 #include "gate.h"
-#include "compressor.h"
 #include "distor.h"
 #include "phaser.h"
 #include "flanger.h"
@@ -60,12 +60,10 @@ float c3[AUDIO_BLOCK_SIZE];
 
 TModuleRuntime moduleRuntime[MAX_PRESET_MODULES];
 
-//MetronomeStage metronome;
-
 Gate gate_pres;
 Gate gate_glob;
 Expander expan;
-Compressor compr;
+CompressorStage compr;
 Distor dist;
 PassFilt hpFilt;
 PassFilt lpFilt;
@@ -245,10 +243,13 @@ void audioProcessBlock()
 			inp_sampleR[i] = gate_pres.dc_block(inp_sampleR[i]);
 			gat_pres[i] = gate_pres.gate_out(inp_sampleR[i]);
 			gat_glob[i] = gate_glob.gate_out(inp_sampleR[i]);
+		}
 
-			if(moduleRuntime[1].descriptor != nullptr && moduleRuntime[1].descriptor->parameter[0].value)
-				inp_sampleL[i] = compr.compr(inp_sampleL[i]);
+//		if(moduleRuntime[1].descriptor != nullptr && moduleRuntime[1].descriptor->parameter[0].value)
+			compr.process(inp_sampleL, nullptr);
 
+		for(uint8_t i = 0;i < AUDIO_BLOCK_SIZE;i++)
+		{
 			c3[i] = inp_sampleL[i];
 			if(tuner_use)
 			{
@@ -259,11 +260,10 @@ void audioProcessBlock()
 
 			if(prog_data[phaz_on] == 1)
 				inp_sampleL[i] = phaser.phaser(inp_sampleL[i]);
+
 			if(prog_data[flan_on] == 1)
 				flanger.flanger(inp_sampleL + i);
 		}
-
-
 
 		if(prog_data[od_on])
 		{
@@ -333,6 +333,7 @@ void audioProcessBlock()
 				inp_sampleL[i] *= gat_pres[i];
 			if(system_file.gat_on)
 				inp_sampleL[i] *= gat_glob[i];
+
 			if(!ind_clean)
 			{
 				if(prog_data[fx_type])
@@ -395,6 +396,7 @@ void audioProcessBlock()
 
 			ind_out_l[0] = abs((int32_t) (inp_sampleL[i] * 8388607.0f * p_vol));
 			ind_out_r[0] = abs((int32_t) (inp_sampleR[i] * 8388607.0f * p_vol));
+
 			if(ind_out_l[0] > ind_out_l[1])
 				ind_out_l[1] = ind_out_l[0];
 			if(ind_out_r[0] > ind_out_r[1])

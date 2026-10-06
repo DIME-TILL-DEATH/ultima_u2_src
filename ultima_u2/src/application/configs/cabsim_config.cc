@@ -1,9 +1,9 @@
+#include <processing/compressorstage.h>
 #include "cabsim_config.h"
 
 #include <string.h>
 
 #include "processing/audio_process.h"
-#include "processing/compressor.h"
 #include "module.h"
 
 static void setParameterValue(TModuleDescriptor& module, uint8_t index, int16_t value)
@@ -204,7 +204,7 @@ static void addNoiseGate(TPreset& preset, uint8_t moduleId, const TCabsimConfig&
 	addModule(preset, gate);
 }
 
-extern Compressor compr;
+extern CompressorStage compr;
 static void addCompressor(TPreset& preset, uint8_t moduleId, const TCabsimConfig& config)
 {
 	TModuleDescriptor comp = makeCompressorModule(moduleId, 0, MONO_CHANNEL);

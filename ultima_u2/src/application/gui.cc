@@ -1,4 +1,5 @@
 //gui_task->update();  приведет к обновлению в gui_task_t::code()
+#include <processing/compressorstage.h>
 #include "gate.h"
 #include "preset.h"
 
@@ -17,7 +18,6 @@
 #include "amp_imp.h"
 #include "filt.h"
 #include "FirststFilt.h"
-#include "processing/compressor.h"
 #include "distor.h"
 #include "phaser.h"
 #include "flanger.h"
@@ -33,7 +33,7 @@ AbstractMenu *mainMenu = nullptr;
 
 extern Gate gate_pres;
 extern Gate gate_glob;
-extern Compressor compr;
+extern CompressorStage compr;
 extern Distor dist;
 extern PassFilt hpFilt;
 extern PassFilt lpFilt;
@@ -489,8 +489,8 @@ void param_set(void)
 
 	for(uint8_t i = 0;i < 3;i++)
 		gate_pres.gate_par(i | (prog_data[i + ga_th] << 8));
-	for(uint8_t i = 1;i < 6;i++)
-		compr.comp_par(i | (prog_data[i + compr_on] << 8));
+//	for(uint8_t i = 1;i < 6;i++)
+//		compr.comp_par(i | (prog_data[i + compr_on] << 8));
 	for(uint8_t i = 0;i < 8;i++)
 		phaser.phaser_par(i | (prog_data[i + phaz_on]) << 8);
 	for(uint8_t i = 0;i < 8;i++)
@@ -6350,105 +6350,6 @@ void gui_task_t::code()
 			break;
 //---------------------------------------------------------------Metronome-----------------------
 		case metronome_menu:
-//			if(!tim4_fl)
-//			{
-//				if(!edit_fl)
-//					display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num * 10, 2);
-//			}
-//			else
-//			{
-//				if(!edit_fl)
-//					display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num * 10, 0);
-//			}
-//			if(encoder_fl1)
-//			{
-//				if(encoder_fl == 1)
-//				{
-//					if(!edit_fl)
-//					{
-//						if(par_num)
-//							display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num-- * 10, 0);
-//					}
-//					else
-//					{
-//						if(par_num == 1)
-//						{
-//							if(tempo > 20)
-//							{
-//								tempo = enc_speed_dec(tempo, 20);
-//								metronom_int = 48000.0f / (tempo / 60.0f) + 0.5f;
-//								display_task->num_5x7(64, 1, tempo, 0);
-//							}
-//						}
-//						else
-//						{
-//							if(metronom_vol)
-//							{
-//								metronom_vol = enc_speed_dec(metronom_vol, 0);
-//								display_task->par_indic(60, 2, metronom_vol);
-//							}
-//						}
-//					}
-//				}
-//				if(encoder_fl == 2)
-//				{
-//					if(!edit_fl)
-//					{
-//						if(par_num < 2)
-//							display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num++ * 10, 0);
-//					}
-//					else
-//					{
-//						if(par_num == 1)
-//						{
-//							if(tempo < 240)
-//							{
-//								tempo = enc_speed_inc(tempo, 240);
-//								metronom_int = 48000.0f / (tempo / 60.0f) + 0.5f;
-//								display_task->num_5x7(64, 1, tempo, 0);
-//							}
-//						}
-//						else
-//						{
-//							if(metronom_vol < 127)
-//							{
-//								metronom_vol = enc_speed_inc(metronom_vol, 127);
-//								display_task->par_indic(60, 2, metronom_vol);
-//							}
-//						}
-//					}
-//				}
-//				tim4_start(1);
-//			}
-//			if(encoder_but)
-//			{
-//				if(!par_num)
-//				{
-//					if(!metronom_start)
-//					{
-//						metronom_int = 48000.0f / (tempo / 60.0f) + 0.5f;
-//						metronom_counter = temp_counter = 0;
-//						metronom_start = 1;
-//						display_task->line_5x7(63, 0, (char*) on_off + metronom_start * 4, 0);
-//					}
-//					else
-//					{
-//						metronom_start = 0;
-//						display_task->line_5x7(63, 0, (char*) on_off + metronom_start * 4, 0);
-//					}
-//				}
-//				else
-//				{
-//					if(!edit_fl)
-//					{
-//						edit_fl = 1;
-//						display_task->line_5x7(0, par_num, (char*) menu_list3 + par_num * 10, 2);
-//					}
-//					else
-//						edit_fl = 0;
-//					tim4_start(1);
-//				}
-//			}
 			if(edit_but)
 				sys_init(6);
 

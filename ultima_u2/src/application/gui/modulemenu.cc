@@ -14,6 +14,7 @@ void ModuleMenu::encoderPressed()
 
 	// TODO consoleEvent for expression, fsw and gui: console_task_>write("event fxset m%d p%d v%d", m_module->moduleId,
 	//m_currentParamNum, m_module->parameter[m_currentParamNum].value);
+	//console_task->paramChanged(moduleId, paramId);
 }
 
 void ModuleMenu::encoderClockwise()

@@ -11,6 +11,7 @@ typedef struct
 	char author[16];
 	uint8_t moduleCount;
 	TModuleDescriptor module[MAX_PRESET_MODULES];
+	TModuleDescriptor presetVolume;
 } TPreset;
 
 extern TPreset currentPreset;
