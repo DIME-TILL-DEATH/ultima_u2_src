@@ -14,6 +14,7 @@ public:
 
 	static constexpr uint8_t audioBlockSize = 16;
 	static constexpr float fs = 48000.0f;
+	static float dsp_scratch[audioBlockSize];
 
 	float dcBlock(float in);
 protected:

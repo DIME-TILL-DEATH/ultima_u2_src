@@ -20,22 +20,15 @@
 #include "tasks/display_task.h"
 #include "tasks/dsp_task.h"
 
+#define DSP_DTCM static __attribute__((section(".dtcm_data"), aligned(32)))
 
-int32_t ccl[AbstractStage::audioBlockSize ];
-int32_t ccr[AbstractStage::audioBlockSize ];
-float out_eq_preamp[AbstractStage::audioBlockSize ];
-float out_fir_amp[AbstractStage::audioBlockSize ];
+DSP_DTCM int32_t ccl[AbstractStage::audioBlockSize];
+DSP_DTCM int32_t ccr[AbstractStage::audioBlockSize];
 
-float out_od[AbstractStage::audioBlockSize ];
+DSP_DTCM float inp_sampleL[AbstractStage::audioBlockSize];
+DSP_DTCM float inp_sampleR[AbstractStage::audioBlockSize];
 
-float inp_sampleL[AbstractStage::audioBlockSize ];
-float inp_sampleR[AbstractStage::audioBlockSize ];
-
-
-float exp_buf[AbstractStage::audioBlockSize ];
-
-float c3[AbstractStage::audioBlockSize ];
-
+float c3[AbstractStage::audioBlockSize];
 
 
 TModuleRuntime moduleRuntime[MAX_PRESET_MODULES];
@@ -277,24 +270,23 @@ void audioProcessBlock()
 		if(prog_data[od_on])
 		{
 			for(uint8_t i = 0;i < AbstractStage::audioBlockSize ;i++)
-				out_od[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl + prog_data[preamp_on] - 1])
-						* od_volume;
-			arm_biquad_cascade_df1_f32(&preamp_instance, out_od, inp_sampleL, AbstractStage::audioBlockSize );
+				AbstractStage::dsp_scratch[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl + prog_data[preamp_on] - 1])
+					* od_volume;
+			arm_biquad_cascade_df1_f32(&preamp_instance, AbstractStage::dsp_scratch, inp_sampleL, AbstractStage::audioBlockSize );
 		}
 
 		if(!prog_data[eq_po])
 		{
-			float out_eq[AbstractStage::audioBlockSize];
-			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, AbstractStage::audioBlockSize );
+			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, AbstractStage::dsp_scratch, AbstractStage::audioBlockSize );
 			if(prog_data[eq_on])
-				arm_copy_f32(out_eq, inp_sampleL, AbstractStage::audioBlockSize );
+				arm_copy_f32(AbstractStage::dsp_scratch, inp_sampleL, AbstractStage::audioBlockSize );
 		}
 
 		if(prog_data[preamp_on] && !prog_data[od_on])
 		{
 			for(uint8_t i = 0;i < AbstractStage::audioBlockSize ;i++)
-				out_eq_preamp[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl]) * pream_vol;
-			arm_biquad_cascade_df1_f32(&preamp_instance, out_eq_preamp, inp_sampleL, AbstractStage::audioBlockSize );
+				AbstractStage::dsp_scratch[i] = dist.soft_clip(inp_sampleL[i] * pr_ga * expan.expander(inp_sampleR[i]), prog_data[pr_over_cl]) * pream_vol;
+			arm_biquad_cascade_df1_f32(&preamp_instance, AbstractStage::dsp_scratch, inp_sampleL, AbstractStage::audioBlockSize );
 		}
 
 		if(prog_data[amp_on])
@@ -304,9 +296,9 @@ void audioProcessBlock()
 
 			if(prog_data[a_t])
 			{
-				arm_fir_f32(&amp_inst, inp_sampleL, out_fir_amp, AbstractStage::audioBlockSize );
+				arm_fir_f32(&amp_inst, inp_sampleL, AbstractStage::dsp_scratch, AbstractStage::audioBlockSize );
 				for(uint8_t i = 0;i < AbstractStage::audioBlockSize ;i++)
-					inp_sampleL[i] = out_fir_amp[i] * 0.6f;
+					inp_sampleL[i] = AbstractStage::dsp_scratch[i] * 0.6f;
 			}
 		}
 
@@ -316,19 +308,17 @@ void audioProcessBlock()
 
 		if(prog_data[eq_po])
 		{
-			float out_eq[AbstractStage::audioBlockSize];
-			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, out_eq, AbstractStage::audioBlockSize );
+			arm_biquad_cascade_df1_f32(&eq_instance, inp_sampleL, AbstractStage::dsp_scratch, AbstractStage::audioBlockSize );
 			if(prog_data[eq_on])
-				arm_copy_f32(out_eq, inp_sampleL, AbstractStage::audioBlockSize );
+				arm_copy_f32(AbstractStage::dsp_scratch, inp_sampleL, AbstractStage::audioBlockSize );
 		}
 		if(prog_data[lop_on])
 			for(uint8_t i = 0;i < AbstractStage::audioBlockSize ;i++)
 				inp_sampleL[i] = lpFilt.filt(inp_sampleL[i], prog_data[lop_on]);
 
-		float out_sample[AbstractStage::audioBlockSize];
-		arm_biquad_cascade_df1_f32(&presen_instance, inp_sampleL, out_sample, AbstractStage::audioBlockSize );
+		arm_biquad_cascade_df1_f32(&presen_instance, inp_sampleL, AbstractStage::dsp_scratch, AbstractStage::audioBlockSize );
 		if(prog_data[pr_on] || prog_data[amp_on])
-			arm_copy_f32(out_sample, inp_sampleL, AbstractStage::audioBlockSize );
+			arm_copy_f32(AbstractStage::dsp_scratch, inp_sampleL, AbstractStage::audioBlockSize );
 
 		if(prog_data[phaz_on] == 2)
 			for(uint8_t i = 0;i < AbstractStage::audioBlockSize ;i++)
@@ -340,11 +330,10 @@ void audioProcessBlock()
 
 		if(prog_data[cab_on] && impulse_flag && !system_file.glob_cab)
 		{
-			float out_ir[AbstractStage::audioBlockSize];
 			inp_sampleR[0] = prog_data[ir_mix] * 0.0079365079365079f;
-			arm_fir_f32(&cab_inst, inp_sampleL, out_ir, AbstractStage::audioBlockSize );
+			arm_fir_f32(&cab_inst, inp_sampleL, AbstractStage::dsp_scratch, AbstractStage::audioBlockSize );
 			for(uint8_t i = 0;i < AbstractStage::audioBlockSize ;i++)
-				inp_sampleL[i] = inp_sampleL[i] * inp_sampleR[0] + out_ir[i] * 0.3f * cab_volume * (1.0f - inp_sampleR[0]);
+				inp_sampleL[i] = inp_sampleL[i] * inp_sampleR[0] + AbstractStage::dsp_scratch[i] * 0.3f * cab_volume * (1.0f - inp_sampleR[0]);
 		}
 
 		gate_pres.process(inp_sampleL, nullptr);
